@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -9,8 +10,11 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessPiece {
-
+    private ChessGame.TeamColor pieceColor;
+    private ChessPiece.PieceType type;
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.pieceColor = pieceColor;
+        this.type = type;
     }
 
     /**
@@ -29,14 +33,14 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return this.pieceColor;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return this.type;
     }
 
     /**
@@ -47,6 +51,93 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> possibleMoves = new ArrayList<ChessMove>();
+
+        switch (this.type) {
+            case KING:
+                System.out.println("KING");
+                //Code
+                break;
+            case QUEEN:
+                System.out.println("QUEEN");
+                // Code
+                break;
+            case BISHOP:
+                System.out.println("BISHOP");
+                possibleMoves.addAll(diagonalMoves(board, myPosition));
+
+                break;
+            case KNIGHT:
+                System.out.println("KNIGHT");
+                // Code
+                break;
+            case ROOK:
+                System.out.println("ROOK");
+                // Code
+                break;
+            case PAWN:
+                System.out.println("PAWN");
+                // Code
+                break;
+        }
+
+        return possibleMoves;
+        //throw new RuntimeException("Not implemented");
     }
+
+
+    private Collection<ChessMove> diagonalMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> possibleDiagonalMoves = new ArrayList<ChessMove>();
+
+        possibleDiagonalMoves.addAll(possibleDiagonalMoves(board, myPosition, "upToRight"));
+        possibleDiagonalMoves.addAll(possibleDiagonalMoves(board, myPosition, "downToRight"));
+        possibleDiagonalMoves.addAll(possibleDiagonalMoves(board, myPosition, "downToLeft"));
+        possibleDiagonalMoves.addAll(possibleDiagonalMoves(board, myPosition, "upToLeft"));
+
+        return possibleDiagonalMoves;
+    }
+
+    private Collection<ChessMove> possibleDiagonalMoves(ChessBoard board, ChessPosition myPosition, String direction) {
+        Collection<ChessMove> possibleDiagonalMoves = new ArrayList<>();
+        int rowIncrement = 0;
+        int columnIncrement = 0;
+
+        switch(direction) {
+            case "upToRight":
+                rowIncrement = 1;
+                columnIncrement = 1;
+                break;
+            case "downToRight":
+                rowIncrement = -1;
+                columnIncrement = 1;
+                break;
+            case "downToLeft":
+                rowIncrement = -1;
+                columnIncrement = -1;
+                break;
+            case "upToLeft":
+                rowIncrement = 1;
+                columnIncrement = -1;
+                break;
+        }
+
+        int tempRow = myPosition.getRow();
+        int tempColumn = myPosition.getColumn();
+        while((tempRow < 8 && tempRow > 1) && (tempColumn < 8 && tempColumn > 1)) {
+            tempRow += rowIncrement;
+            tempColumn += columnIncrement;
+            ChessPosition endPosition = new ChessPosition(tempRow, tempColumn);
+            if (board.getPiece(endPosition) == null || board.getPiece(endPosition).pieceColor != this.pieceColor) { //We don't want the colors to be the same
+                ChessMove newChessMove = new ChessMove(myPosition, endPosition, null);
+                System.out.println(newChessMove.ToString());
+                possibleDiagonalMoves.add(newChessMove);
+            } else {
+                break;
+            }
+        }
+        return possibleDiagonalMoves;
+    }
+
+
+
 }
