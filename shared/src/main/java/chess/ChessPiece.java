@@ -144,6 +144,7 @@ public class ChessPiece {
             if (board.getPiece(endPosition) == null || board.getPiece(endPosition).pieceColor != this.pieceColor) { //We don't want the colors to be the same
                 ChessMove newChessMove = new ChessMove(myPosition, endPosition, null);
                 possibleDiagonalMoves.add(newChessMove);
+                //If the piece at end position is opposite the moving piece break the loop
                 if (board.getPiece(endPosition) != null && board.getPiece(endPosition).pieceColor != this.pieceColor) {
                     break;
                 }
