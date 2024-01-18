@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -15,6 +16,19 @@ public class ChessPiece {
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
     }
 
     /**
@@ -63,9 +77,8 @@ public class ChessPiece {
                 // Code
                 break;
             case BISHOP:
-                System.out.println("BISHOP");
+                //System.out.println("BISHOP");
                 possibleMoves.addAll(diagonalMoves(board, myPosition));
-
                 break;
             case KNIGHT:
                 System.out.println("KNIGHT");
@@ -127,17 +140,18 @@ public class ChessPiece {
             tempRow += rowIncrement;
             tempColumn += columnIncrement;
             ChessPosition endPosition = new ChessPosition(tempRow, tempColumn);
+            // if the endPosition is empty or the color of the piece isn't the same as the moving piece
             if (board.getPiece(endPosition) == null || board.getPiece(endPosition).pieceColor != this.pieceColor) { //We don't want the colors to be the same
                 ChessMove newChessMove = new ChessMove(myPosition, endPosition, null);
-                System.out.println(newChessMove.ToString());
                 possibleDiagonalMoves.add(newChessMove);
-            } else {
+                if (board.getPiece(endPosition) != null && board.getPiece(endPosition).pieceColor != this.pieceColor) {
+                    break;
+                }
+            }
+            else {
                 break;
             }
         }
         return possibleDiagonalMoves;
     }
-
-
-
 }
