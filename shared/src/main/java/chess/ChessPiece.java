@@ -86,7 +86,7 @@ public class ChessPiece {
                 break;
             case ROOK:
                 System.out.println("ROOK");
-                // Code
+                possibleMoves.addAll(straightMoves(board, myPosition));
                 break;
             case PAWN:
                 System.out.println("PAWN");
@@ -130,25 +130,28 @@ public class ChessPiece {
                 break;
         }
 
-//        int tempRow = myPosition.getRow();
-//        int tempColumn = myPosition.getColumn();
-//        while((tempRow < 8 && tempRow > 1) && (tempColumn < 8 && tempColumn > 1)) {
-//            tempRow += rowIncrement;
-//            tempColumn += columnIncrement;
-//            ChessPosition endPosition = new ChessPosition(tempRow, tempColumn);
-//            // if the endPosition is empty or the color of the piece isn't the same as the moving piece
-//            if (board.getPiece(endPosition) == null || board.getPiece(endPosition).pieceColor != this.pieceColor) { //We don't want the colors to be the same
-//                ChessMove newChessMove = new ChessMove(myPosition, endPosition, null);
-//                possibleStraightMoves.add(newChessMove);
-//                //If the piece at end position is opposite the moving piece break the loop
-//                if (board.getPiece(endPosition) != null && board.getPiece(endPosition).pieceColor != this.pieceColor) {
-//                    break;
-//                }
-//            }
-//            else {
-//                break;
-//            }
-//        }
+        int tempRow = myPosition.getRow();
+        int tempColumn = myPosition.getColumn();
+        tempRow += rowIncrement;
+        tempColumn += columnIncrement;
+        while((tempRow < 9 && tempRow > 0) && (tempColumn < 9 && tempColumn > 0)) {
+            ChessPosition endPosition = new ChessPosition(tempRow, tempColumn);
+            // if the endPosition is empty or the color of the piece isn't the same as the moving piece
+            if (board.getPiece(endPosition) == null || board.getPiece(endPosition).pieceColor != this.pieceColor) { //We don't want the colors to be the same
+                ChessMove newChessMove = new ChessMove(myPosition, endPosition, null);
+                possibleStraightMoves.add(newChessMove);
+                //System.out.println(newChessMove.ToString());
+                //If the piece at end position is opposite the moving piece break the loop
+                if (board.getPiece(endPosition) != null && board.getPiece(endPosition).pieceColor != this.pieceColor) {
+                    break;
+                }
+            }
+            else {
+                break;
+            }
+            tempRow += rowIncrement;
+            tempColumn += columnIncrement;
+        }
 
         return possibleStraightMoves;
     }
@@ -191,9 +194,9 @@ public class ChessPiece {
 
         int tempRow = myPosition.getRow();
         int tempColumn = myPosition.getColumn();
-        while((tempRow < 8 && tempRow > 1) && (tempColumn < 8 && tempColumn > 1)) {
-            tempRow += rowIncrement;
-            tempColumn += columnIncrement;
+        tempRow += rowIncrement;
+        tempColumn += columnIncrement;
+        while((tempRow < 9 && tempRow > 0) && (tempColumn < 9 && tempColumn > 0)) {
             ChessPosition endPosition = new ChessPosition(tempRow, tempColumn);
             // if the endPosition is empty or the color of the piece isn't the same as the moving piece
             if (board.getPiece(endPosition) == null || board.getPiece(endPosition).pieceColor != this.pieceColor) { //We don't want the colors to be the same
@@ -207,6 +210,8 @@ public class ChessPiece {
             else {
                 break;
             }
+            tempRow += rowIncrement;
+            tempColumn += columnIncrement;
         }
         return possibleDiagonalMoves;
     }
