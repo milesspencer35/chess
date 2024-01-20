@@ -82,7 +82,8 @@ public class ChessPiece {
                 break;
             case KNIGHT:
                 System.out.println("KNIGHT");
-                // Code
+                KnightMovesCalculator knightMoves = new KnightMovesCalculator();
+                possibleMoves.addAll(knightMoves.pieceMoves(board, myPosition));
                 break;
             case ROOK:
                 RookMovesCalculator rookMoves = new RookMovesCalculator();
