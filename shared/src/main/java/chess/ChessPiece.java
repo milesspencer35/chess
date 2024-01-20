@@ -89,8 +89,8 @@ public class ChessPiece {
                 possibleMoves.addAll(rookMoves.pieceMoves(board, myPosition));
                 break;
             case PAWN:
-                System.out.println("PAWN");
-                // Code
+                PawnMovesCalculator pawnMoves = new PawnMovesCalculator();
+                possibleMoves.addAll(pawnMoves.pieceMoves(board, myPosition));
                 break;
         }
 
