@@ -77,16 +77,16 @@ public class ChessPiece {
                 // Code
                 break;
             case BISHOP:
-                //System.out.println("BISHOP");
-                possibleMoves.addAll(diagonalMoves(board, myPosition));
+                BishopMovesCalculator bishopMoves = new BishopMovesCalculator();
+                possibleMoves.addAll(bishopMoves.pieceMoves(board, myPosition));
                 break;
             case KNIGHT:
                 System.out.println("KNIGHT");
                 // Code
                 break;
             case ROOK:
-                System.out.println("ROOK");
-                possibleMoves.addAll(straightMoves(board, myPosition));
+                RookMovesCalculator rookMoves = new RookMovesCalculator();
+                possibleMoves.addAll(rookMoves.pieceMoves(board, myPosition));
                 break;
             case PAWN:
                 System.out.println("PAWN");
@@ -95,124 +95,6 @@ public class ChessPiece {
         }
 
         return possibleMoves;
-        //throw new RuntimeException("Not implemented");
     }
 
-    private Collection<ChessMove> straightMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> possibleStraightMoves = new ArrayList<ChessMove>();
-
-        possibleStraightMoves.addAll(possibleStraightMoves(board, myPosition, "Right"));
-        possibleStraightMoves.addAll(possibleStraightMoves(board, myPosition, "Left"));
-        possibleStraightMoves.addAll(possibleStraightMoves(board, myPosition, "Up"));
-        possibleStraightMoves.addAll(possibleStraightMoves(board, myPosition, "Down"));
-
-        return possibleStraightMoves;
-    }
-
-    private Collection<ChessMove> possibleStraightMoves(ChessBoard board, ChessPosition myPosition, String direction) {
-        Collection<ChessMove> possibleStraightMoves = new ArrayList<ChessMove>();
-
-        int rowIncrement = 0;
-        int columnIncrement = 0;
-
-        switch(direction) {
-            case "Right":
-                columnIncrement = 1;
-                break;
-            case "Left":
-                columnIncrement = -1;
-                break;
-            case "Up":
-                rowIncrement = 1;
-                break;
-            case "Down":
-                rowIncrement = -1;
-                break;
-        }
-
-        int tempRow = myPosition.getRow();
-        int tempColumn = myPosition.getColumn();
-        tempRow += rowIncrement;
-        tempColumn += columnIncrement;
-        while((tempRow < 9 && tempRow > 0) && (tempColumn < 9 && tempColumn > 0)) {
-            ChessPosition endPosition = new ChessPosition(tempRow, tempColumn);
-            // if the endPosition is empty or the color of the piece isn't the same as the moving piece
-            if (board.getPiece(endPosition) == null || board.getPiece(endPosition).pieceColor != this.pieceColor) { //We don't want the colors to be the same
-                ChessMove newChessMove = new ChessMove(myPosition, endPosition, null);
-                possibleStraightMoves.add(newChessMove);
-                //System.out.println(newChessMove.ToString());
-                //If the piece at end position is opposite the moving piece break the loop
-                if (board.getPiece(endPosition) != null && board.getPiece(endPosition).pieceColor != this.pieceColor) {
-                    break;
-                }
-            }
-            else {
-                break;
-            }
-            tempRow += rowIncrement;
-            tempColumn += columnIncrement;
-        }
-
-        return possibleStraightMoves;
-    }
-
-
-    private Collection<ChessMove> diagonalMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> possibleDiagonalMoves = new ArrayList<ChessMove>();
-
-        possibleDiagonalMoves.addAll(possibleDiagonalMoves(board, myPosition, "upToRight"));
-        possibleDiagonalMoves.addAll(possibleDiagonalMoves(board, myPosition, "downToRight"));
-        possibleDiagonalMoves.addAll(possibleDiagonalMoves(board, myPosition, "downToLeft"));
-        possibleDiagonalMoves.addAll(possibleDiagonalMoves(board, myPosition, "upToLeft"));
-
-        return possibleDiagonalMoves;
-    }
-
-    private Collection<ChessMove> possibleDiagonalMoves(ChessBoard board, ChessPosition myPosition, String direction) {
-        Collection<ChessMove> possibleDiagonalMoves = new ArrayList<>();
-        int rowIncrement = 0;
-        int columnIncrement = 0;
-
-        switch(direction) {
-            case "upToRight":
-                rowIncrement = 1;
-                columnIncrement = 1;
-                break;
-            case "downToRight":
-                rowIncrement = -1;
-                columnIncrement = 1;
-                break;
-            case "downToLeft":
-                rowIncrement = -1;
-                columnIncrement = -1;
-                break;
-            case "upToLeft":
-                rowIncrement = 1;
-                columnIncrement = -1;
-                break;
-        }
-
-        int tempRow = myPosition.getRow();
-        int tempColumn = myPosition.getColumn();
-        tempRow += rowIncrement;
-        tempColumn += columnIncrement;
-        while((tempRow < 9 && tempRow > 0) && (tempColumn < 9 && tempColumn > 0)) {
-            ChessPosition endPosition = new ChessPosition(tempRow, tempColumn);
-            // if the endPosition is empty or the color of the piece isn't the same as the moving piece
-            if (board.getPiece(endPosition) == null || board.getPiece(endPosition).pieceColor != this.pieceColor) { //We don't want the colors to be the same
-                ChessMove newChessMove = new ChessMove(myPosition, endPosition, null);
-                possibleDiagonalMoves.add(newChessMove);
-                //If the piece at end position is opposite the moving piece break the loop
-                if (board.getPiece(endPosition) != null && board.getPiece(endPosition).pieceColor != this.pieceColor) {
-                    break;
-                }
-            }
-            else {
-                break;
-            }
-            tempRow += rowIncrement;
-            tempColumn += columnIncrement;
-        }
-        return possibleDiagonalMoves;
-    }
 }
