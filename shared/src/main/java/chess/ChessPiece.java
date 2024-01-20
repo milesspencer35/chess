@@ -69,8 +69,8 @@ public class ChessPiece {
 
         switch (this.type) {
             case KING:
-                System.out.println("KING");
-                //Code
+                KingMovesCalculator kingMoves = new KingMovesCalculator();
+                possibleMoves.addAll(kingMoves.pieceMoves(board, myPosition));
                 break;
             case QUEEN:
                 QueenMovesCalculator queenMoves = new QueenMovesCalculator();
@@ -81,7 +81,6 @@ public class ChessPiece {
                 possibleMoves.addAll(bishopMoves.pieceMoves(board, myPosition));
                 break;
             case KNIGHT:
-                System.out.println("KNIGHT");
                 KnightMovesCalculator knightMoves = new KnightMovesCalculator();
                 possibleMoves.addAll(knightMoves.pieceMoves(board, myPosition));
                 break;
