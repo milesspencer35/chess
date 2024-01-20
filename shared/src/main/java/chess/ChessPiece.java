@@ -73,8 +73,8 @@ public class ChessPiece {
                 //Code
                 break;
             case QUEEN:
-                System.out.println("QUEEN");
-                // Code
+                QueenMovesCalculator queenMoves = new QueenMovesCalculator();
+                possibleMoves.addAll(queenMoves.pieceMoves(board, myPosition));
                 break;
             case BISHOP:
                 BishopMovesCalculator bishopMoves = new BishopMovesCalculator();
