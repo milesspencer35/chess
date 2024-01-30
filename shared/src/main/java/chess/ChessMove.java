@@ -56,7 +56,6 @@ public class ChessMove {
      */
     public ChessPiece.PieceType getPromotionPiece() {
         return this.promotionPiece;
-        // Might need to do more here to so that it returns null
     }
 
     public String ToString() {
