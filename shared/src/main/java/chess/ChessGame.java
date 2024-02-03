@@ -51,8 +51,22 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         // A move is valid if it doesn't put you in check or leave you in check
-        throw new RuntimeException("Not implemented");
-        //ArrayList<ChessMove> moves = (ArrayList<ChessMove>) board.getPiece(startPosition).pieceMoves(board, startPosition);
+        ArrayList<ChessMove> moves = (ArrayList<ChessMove>) board.getPiece(startPosition).pieceMoves(board, startPosition);
+
+        for (ChessMove move: moves) {
+            ChessBoard cloneBoard = board.clone(); // copy board
+            ChessPiece tempPiece = cloneBoard.getPiece(move.getStartPosition()); //tempPiece at position
+            cloneBoard.addPiece(move.getStartPosition(), null); //Remove piece from start position
+            cloneBoard.addPiece(move.getEndPosition(), tempPiece); //Move piece to end position
+            ChessGame game = new ChessGame(); //new chess game so that I can call isInCheck
+            game.setBoard(cloneBoard); // set the game board as the cloned board
+
+            // If the move puts you in check, remove it
+            if (game.isInCheck(tempPiece.getTeamColor())) {
+                moves.remove(move);
+            }
+        }
+        return moves;
     }
 
     /**
@@ -62,7 +76,12 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        if (validMoves(move.getStartPosition()).contains(move)
+                && board.getPiece(move.getStartPosition()).getTeamColor() == teamTurnColor) {
+            ChessPiece piece = board.getPiece(move.getStartPosition());
+            board.addPiece(move.getEndPosition(), piece);
+            board.addPiece(move.getStartPosition(), null);
+        }
     }
 
     /**
