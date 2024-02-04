@@ -52,6 +52,7 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         // A move is valid if it doesn't put you in check or leave you in check
         ArrayList<ChessMove> moves = (ArrayList<ChessMove>) board.getPiece(startPosition).pieceMoves(board, startPosition);
+        ArrayList<ChessMove> movesToRemove = new ArrayList<>();
 
         for (ChessMove move: moves) {
             ChessBoard cloneBoard = board.clone(); // copy board
@@ -59,13 +60,16 @@ public class ChessGame {
             cloneBoard.addPiece(move.getStartPosition(), null); //Remove piece from start position
             cloneBoard.addPiece(move.getEndPosition(), tempPiece); //Move piece to end position
             ChessGame game = new ChessGame(); //new chess game so that I can call isInCheck
+            game.setTeamTurn(tempPiece.getTeamColor()); // Keep the turn the same, isInCheck flips it so you don't have to here
             game.setBoard(cloneBoard); // set the game board as the cloned board
 
             // If the move puts you in check, remove it
-            if (game.isInCheck(tempPiece.getTeamColor())) {
-                moves.remove(move);
+            if (game.isInCheck(game.getTeamTurn())) {
+                movesToRemove.add(move);
             }
         }
+
+        moves.removeAll(movesToRemove);
         return moves;
     }
 
@@ -76,11 +80,12 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if (validMoves(move.getStartPosition()).contains(move)
-                && board.getPiece(move.getStartPosition()).getTeamColor() == teamTurnColor) {
+        if (validMoves(move.getStartPosition()).contains(move) && board.getPiece(move.getStartPosition()).getTeamColor() == teamTurnColor) {
             ChessPiece piece = board.getPiece(move.getStartPosition());
             board.addPiece(move.getEndPosition(), piece);
             board.addPiece(move.getStartPosition(), null);
+        } else {
+            throw new InvalidMoveException("Invalid Move");
         }
 
         if (teamTurnColor == TeamColor.WHITE) {
