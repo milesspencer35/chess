@@ -62,8 +62,10 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         //Move diagonal if opposite color piece in diagonal spot
         ChessPosition whiteDiagonalRight = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1);
         ChessPosition whiteDiagonalLeft = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1);
+
         if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
-            if (board.getPiece(whiteDiagonalRight) != null
+            if ( whiteDiagonalRight.getColumn() < 9
+                    && board.getPiece(whiteDiagonalRight) != null
                     && board.getPiece(whiteDiagonalRight).getTeamColor() != ChessGame.TeamColor.WHITE) {
                 if (myPosition.getRow() + 1 == 8) {
                     for (ChessPiece.PieceType promotion : promotionArray) {
@@ -77,7 +79,8 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
                 }
             }
 
-            if (board.getPiece(whiteDiagonalLeft) != null
+            if (whiteDiagonalLeft.getColumn() > 0
+                    && board.getPiece(whiteDiagonalLeft) != null
                     && board.getPiece(whiteDiagonalLeft).getTeamColor() != ChessGame.TeamColor.WHITE) {
                 if (myPosition.getRow() + 1 == 8) {
                     for (ChessPiece.PieceType promotion : promotionArray) {
@@ -96,7 +99,8 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         ChessPosition blackDiagonalRight = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1);
         ChessPosition blackDiagonalLeft = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1);
         if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
-            if (board.getPiece(blackDiagonalRight) != null
+            if (blackDiagonalRight.getColumn() < 9
+                    && board.getPiece(blackDiagonalRight) != null
                     && board.getPiece(blackDiagonalRight).getTeamColor() != ChessGame.TeamColor.BLACK) {
                 if (myPosition.getRow() - 1 == 1) {
                     for (ChessPiece.PieceType promotion : promotionArray) {
@@ -110,7 +114,8 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
                 }
             }
 
-            if (board.getPiece(blackDiagonalLeft) != null
+            if (blackDiagonalLeft.getColumn() > 0
+                    && board.getPiece(blackDiagonalLeft) != null
                     && board.getPiece(blackDiagonalLeft).getTeamColor() != ChessGame.TeamColor.BLACK) {
                 if (myPosition.getRow() - 1 == 1) {
                     for (ChessPiece.PieceType promotion : promotionArray) {
