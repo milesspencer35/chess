@@ -1,5 +1,6 @@
 package chess;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -130,7 +131,18 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (isInCheck(teamColor)) {
+            ArrayList<ChessPosition> piecePositions = new ArrayList<>();
+            for(ChessPosition pos: piecePositions) {
+                if (validMoves(pos).isEmpty()) {
+                    continue;
+                } else {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -141,7 +153,18 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (teamTurnColor == teamColor) {
+            ArrayList<ChessPosition> piecePositions = new ArrayList<>();
+            for(ChessPosition pos: piecePositions) {
+                if (validMoves(pos).isEmpty()) {
+                    continue;
+                } else {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
