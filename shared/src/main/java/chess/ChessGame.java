@@ -132,11 +132,9 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         if (isInCheck(teamColor)) {
-            ArrayList<ChessPosition> piecePositions = new ArrayList<>();
+            ArrayList<ChessPosition> piecePositions = (ArrayList<ChessPosition>) getPiecePositions();
             for(ChessPosition pos: piecePositions) {
-                if (validMoves(pos).isEmpty()) {
-                    continue;
-                } else {
+                if (board.getPiece(pos).getTeamColor() == teamColor && !validMoves(pos).isEmpty()) {
                     return false;
                 }
             }
@@ -154,11 +152,9 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         if (teamTurnColor == teamColor) {
-            ArrayList<ChessPosition> piecePositions = new ArrayList<>();
+            ArrayList<ChessPosition> piecePositions = (ArrayList<ChessPosition>) getPiecePositions();
             for(ChessPosition pos: piecePositions) {
-                if (validMoves(pos).isEmpty()) {
-                    continue;
-                } else {
+                if (board.getPiece(pos).getTeamColor() == teamColor && !validMoves(pos).isEmpty()) {
                     return false;
                 }
             }
