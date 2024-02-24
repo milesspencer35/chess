@@ -7,7 +7,7 @@ import dataAccess.UserDAO;
 import model.*;
 
 public class UserService {
-    AuthData register(UserData user) {
+    public AuthData register(UserData user) {
         UserDAO userDao = MemoryUserDAO.getInstance();
         AuthDAO authDAO = MemoryAuthDAO.getInstance();
         UserData preExistingUser = userDao.getUser(user.username());
