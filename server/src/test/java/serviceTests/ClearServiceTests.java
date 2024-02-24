@@ -1,4 +1,7 @@
-package serviceTests;
+package serviceTests.service;
 
 public class ClearServiceTests {
+
+    
+
 }
