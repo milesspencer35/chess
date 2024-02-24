@@ -4,11 +4,11 @@ import dataAccess.*;
 
 public class ClearService {
     public void clearApplication() {
-        UserDAO userDao = new MemoryUserDAO();
+        UserDAO userDao = MemoryUserDAO.getInstance();
         userDao.clear();
-        AuthDAO authDao = new MemoryAuthDAO();
+        AuthDAO authDao = MemoryAuthDAO.getInstance();
         authDao.clear();
-        GameDAO gameDao = new MemoryGameDAO();
+        GameDAO gameDao = MemoryGameDAO.getInstance();
         gameDao.clear();
     }
 }

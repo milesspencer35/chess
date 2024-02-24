@@ -2,10 +2,22 @@ package dataAccess;
 
 import chess.ChessGame;
 import model.GameData;
+import java.util.HashMap;
 import java.util.Map;
 
 public class MemoryGameDAO implements GameDAO {
-    private Map<Integer,GameData> Games;
+
+    private static MemoryGameDAO instance;
+    // private constructor to avoid client applications using the constructor
+    private MemoryGameDAO(){}
+    public static MemoryGameDAO getInstance() {
+        if (instance == null) {
+            instance = new MemoryGameDAO();
+        }
+        return instance;
+    }
+
+    private Map<Integer,GameData> Games = new HashMap<>();
     private int nextGameID = 0;
     @Override
     public void clear() {
