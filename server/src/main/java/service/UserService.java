@@ -16,7 +16,7 @@ public class UserService {
             AuthData newAuth = authDAO.createAuth(user.username());
             return newAuth;
         } else {
-            // Already taken, how do I do the error in here?
+            // Already taken, how do I do the error message in here?
             return null;
         }
     }
