@@ -28,12 +28,12 @@ public class UserServiceTests {
 
     @Test
     public void RegisterDoesNotAddDuplicateUser() {
-        //UserData user1 = new UserData("George", "USA123", "America@gmail.com");
-        UserData user2 = new UserData("George", "USA123", "America@gmail.com");
-        //AuthData resultAuth = UserService.register(user1);
-        //Assertions.assertNotNull(resultAuth);
+        UserData user1 = new UserData("Miles", "USA123", "America@gmail.com");
+        UserData user2 = new UserData("Miles", "USA123", "America@gmail.com");
+        AuthData resultAuth = UserService.register(user1);
+        Assertions.assertNotNull(resultAuth);
 
-        AuthData resultAuth = UserService.register(user2);
+        resultAuth = UserService.register(user2);
         Assertions.assertNull(resultAuth);
     }
 }
