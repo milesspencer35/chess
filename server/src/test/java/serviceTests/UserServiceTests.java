@@ -5,6 +5,7 @@ import model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import response.RegisterResponse;
 import service.ClearService;
 import service.UserService;
 
@@ -19,21 +20,24 @@ public class UserServiceTests {
     @Test
     public void RegisterAddsUserCorrectly() {
         UserData user = new UserData("George", "USA123", "America@gmail.com");
-        AuthData resultAuth = UserService.register(user);
+        RegisterResponse response = UserService.register(user);
 
-        Assertions.assertNotNull(resultAuth);
-        Assertions.assertNotNull(resultAuth.authToken());
-        Assertions.assertEquals("George", resultAuth.username());
+        Assertions.assertNotNull(response);
+        Assertions.assertNotNull(response.authToken());
+        Assertions.assertNull(response.message());
+        Assertions.assertEquals("George", response.username());
     }
 
     @Test
     public void RegisterDoesNotAddDuplicateUser() {
         UserData user1 = new UserData("Miles", "USA123", "America@gmail.com");
         UserData user2 = new UserData("Miles", "USA123", "America@gmail.com");
-        AuthData resultAuth = UserService.register(user1);
-        Assertions.assertNotNull(resultAuth);
+        RegisterResponse response = UserService.register(user1);
+        Assertions.assertNotNull(response);
 
-        resultAuth = UserService.register(user2);
-        Assertions.assertNull(resultAuth);
+        response = UserService.register(user2);
+        Assertions.assertNull(response.authToken());
+        Assertions.assertNull(response.username());
+        Assertions.assertEquals("Error: already taken", response.message());
     }
 }
