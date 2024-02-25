@@ -1,2 +1,4 @@
-package response;public record ErrorResponse() {
+package response;
+
+public record ErrorResponse(String message) {
 }
