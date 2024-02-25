@@ -36,6 +36,16 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     @Override
+    public UserData verifyUser(String username, String password) {
+        UserData user = Users.get(username);
+        if (user != null && user.password() == password) {
+            return user;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public int numberOfUsers() {
         return Users.size();
     }
