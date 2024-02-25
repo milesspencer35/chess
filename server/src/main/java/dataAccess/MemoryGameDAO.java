@@ -2,6 +2,8 @@ package dataAccess;
 
 import chess.ChessGame;
 import model.GameData;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,8 +36,10 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public Map<Integer,GameData> listGames() {
-        return Games;
+    public ArrayList<GameData> listGames() {
+        ArrayList<GameData> arrayOfGames = new ArrayList<>();
+        arrayOfGames.addAll(Games.values());
+        return arrayOfGames;
     }
 
     @Override
