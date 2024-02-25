@@ -2,6 +2,7 @@ package service;
 
 import dataAccess.*;
 import model.*;
+import response.ErrorResponse;
 import response.LoginResponse;
 import response.RegisterResponse;
 
@@ -50,6 +51,19 @@ public class UserService {
         }
         return loginResponse;
     }
-    void logout(AuthData authToken) {}
+    public ErrorResponse logout(AuthData authData) {
+        try {
+            AuthDAO authDAO = MemoryAuthDAO.getInstance();
+            AuthData userAuthData = authDAO.getAuth(authData.authToken());
+            if (userAuthData == null) {
+                ErrorResponse errorResponse = new ErrorResponse("Error: unauthorized");
+                return errorResponse;
+            }
 
+            authDAO.deleteAuth(userAuthData.authToken());
+        } catch (DataAccessException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return null;
+    }
 }

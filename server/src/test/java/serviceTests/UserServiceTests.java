@@ -5,6 +5,7 @@ import model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import response.ErrorResponse;
 import response.LoginResponse;
 import response.RegisterResponse;
 import service.UserService;
@@ -66,7 +67,7 @@ public class UserServiceTests {
     @Test
     public void WrongPasswordDoesNotLogin() {
         UserData user = new UserData("John", "JMan", "john@gmail.com");
-        RegisterResponse registerResponse = UserService.register(user);
+        UserService.register(user);
 
         user = new UserData("John", "Will34", "john@gmail.com");
         LoginResponse loginResponse = UserService.login(user);
@@ -86,5 +87,26 @@ public class UserServiceTests {
         Assertions.assertEquals("Error: unauthorized", loginResponse.message());
     }
 
+    @Test
+    public void SuccessfulLogout() {
+        UserData user = new UserData("Peter", "pete123", "peter@gmail.com");
+        UserService.register(user);
+        LoginResponse loginResponse = UserService.login(user);
+        AuthData authData = new AuthData(loginResponse.authToken(), loginResponse.username());
 
+        ErrorResponse errorResponse = UserService.logout(authData);
+        Assertions.assertNull(errorResponse);
+    }
+
+    @Test
+    public void UnauthorizedLogout() {
+        UserData user = new UserData("Jimmy", "Jimbo58", "jimmy@gmail.com");
+        UserService.register(user);
+        LoginResponse loginResponse = UserService.login(user);
+        AuthData authData = new AuthData("123", loginResponse.username());
+
+        ErrorResponse errorResponse = UserService.logout(authData);
+        Assertions.assertNotNull(errorResponse);
+        Assertions.assertEquals("Error: unauthorized", errorResponse.message());
+    }
 }
