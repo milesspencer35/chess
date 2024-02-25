@@ -2,6 +2,7 @@ package service;
 
 import dataAccess.*;
 import model.*;
+import response.LoginResponse;
 import response.RegisterResponse;
 
 public class UserService {
@@ -31,7 +32,24 @@ public class UserService {
         return newResponse;
     }
 
-    AuthData login(UserData user) {return null;}
+    public LoginResponse login(UserData user) {
+        LoginResponse loginResponse = null;
+        try {
+            UserDAO userDAO = MemoryUserDAO.getInstance();
+            AuthDAO authDAO = MemoryAuthDAO.getInstance();
+            UserData verifiedUser = userDAO.verifyUser(user.username(), user.password());
+            if (verifiedUser == null) {
+                return new LoginResponse(null, null, "Error: unauthorized");
+            }
+
+            AuthData newAuth = authDAO.createAuth(verifiedUser.username());
+            loginResponse = new LoginResponse(newAuth.authToken(), newAuth.username(), null);
+
+        } catch (DataAccessException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return loginResponse;
+    }
     void logout(AuthData authToken) {}
 
 }

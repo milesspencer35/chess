@@ -5,6 +5,7 @@ import model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import response.LoginResponse;
 import response.RegisterResponse;
 import service.UserService;
 
@@ -49,5 +50,41 @@ public class UserServiceTests {
         Assertions.assertNull(response.username());
         Assertions.assertEquals("Error: bad request", response.message());
     }
+
+    @Test
+    public void UserIsLoggedIn() {
+        UserData user = new UserData("William", "Will34", "will@gmail.com");
+        RegisterResponse registerResponse = UserService.register(user);
+
+        LoginResponse loginResponse = UserService.login(user);
+
+        Assertions.assertNotNull(loginResponse.authToken());
+        Assertions.assertEquals("William",loginResponse.username());
+        Assertions.assertNull(loginResponse.message());
+    }
+
+    @Test
+    public void WrongPasswordDoesNotLogin() {
+        UserData user = new UserData("John", "JMan", "john@gmail.com");
+        RegisterResponse registerResponse = UserService.register(user);
+
+        user = new UserData("John", "Will34", "john@gmail.com");
+        LoginResponse loginResponse = UserService.login(user);
+
+        Assertions.assertNull(loginResponse.authToken());
+        Assertions.assertNull(loginResponse.username());
+        Assertions.assertEquals("Error: unauthorized", loginResponse.message());
+    }
+
+    @Test
+    public void NonExistUserDoesNotLogin() {
+        UserData user = new UserData("Spiderman", "webs", "spiderman@gmail.com");
+        LoginResponse loginResponse = UserService.login(user);
+
+        Assertions.assertNull(loginResponse.authToken());
+        Assertions.assertNull(loginResponse.username());
+        Assertions.assertEquals("Error: unauthorized", loginResponse.message());
+    }
+
 
 }
