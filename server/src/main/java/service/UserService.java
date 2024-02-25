@@ -27,6 +27,7 @@ public class UserService {
         }
         return newResponse;
     }
+
     AuthData login(UserData user) {return null;}
     void logout(AuthData authToken) {}
 

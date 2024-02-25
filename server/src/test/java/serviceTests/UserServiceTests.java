@@ -40,4 +40,15 @@ public class UserServiceTests {
         Assertions.assertNull(response.username());
         Assertions.assertEquals("Error: already taken", response.message());
     }
+
+    @Test
+    public void RegisterSendsMessageForBadRequest() {
+        UserData user = new UserData("Bill", "BillDawg", null);
+        RegisterResponse response = UserService.register(user);
+
+        Assertions.assertNull(response.authToken());
+        Assertions.assertNull(response.username());
+        Assertions.assertEquals("Error: bad request", response.message());
+    }
+
 }
