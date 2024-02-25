@@ -2,7 +2,12 @@ package service;
 
 import dataAccess.*;
 import model.AuthData;
+import model.GameData;
 import response.CreateGameResponse;
+import response.ListGamesResponse;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 public class GameService {
     public CreateGameResponse createGame(String authToken, String gameName) {
@@ -30,4 +35,27 @@ public class GameService {
 
         return createGameResponse;
     }
+
+    public ListGamesResponse listGames(String authToken) {
+        ListGamesResponse listGamesResponse = null;
+
+        try {
+            AuthDAO authDAO = MemoryAuthDAO.getInstance();
+            AuthData userAuthData = authDAO.getAuth(authToken);
+            if (userAuthData == null) {
+                listGamesResponse = new ListGamesResponse(null, "Error: unauthorized");
+                return listGamesResponse;
+            }
+
+            GameDAO gameDAO = MemoryGameDAO.getInstance();
+            ArrayList<GameData> games = gameDAO.listGames();
+            listGamesResponse = new ListGamesResponse(games, null);
+        } catch (DataAccessException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        return listGamesResponse;
+    }
+
+
 }

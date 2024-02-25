@@ -4,6 +4,7 @@ import model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import response.CreateGameResponse;
+import response.ListGamesResponse;
 import response.RegisterResponse;
 import service.GameService;
 import service.UserService;
@@ -42,5 +43,27 @@ public class GameServiceTests {
         Assertions.assertEquals("Error: unauthorized", createGameResponse.message());
     }
 
+    @Test
+    public void listGamesCorrectly() {
+        UserData user = new UserData("K'naan", "WavinFlag", "knaan@gmail.com");
+        RegisterResponse registerResponse = userService.register(user);
+
+        gameService.createGame(registerResponse.authToken(), "Game 3");
+        ListGamesResponse listGamesResponse = gameService.listGames(registerResponse.authToken());
+        Assertions.assertNotNull(listGamesResponse);
+        Assertions.assertNotNull(listGamesResponse.games());
+        Assertions.assertNotEquals(0, listGamesResponse.games().size());
+        Assertions.assertNull(listGamesResponse.message());
+    }
+
+    @Test
+    public void NotAuthorizedToListGames() {
+        ListGamesResponse listGamesResponse = gameService.listGames("1234");
+
+        Assertions.assertNotNull(listGamesResponse);
+        Assertions.assertNull(listGamesResponse.games());
+        Assertions.assertNotNull(listGamesResponse.message());
+        Assertions.assertEquals("Error: unauthorized", listGamesResponse.message());
+    }
 
 }
