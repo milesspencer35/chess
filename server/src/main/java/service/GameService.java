@@ -1,9 +1,11 @@
 package service;
 
+import chess.ChessGame;
 import dataAccess.*;
 import model.AuthData;
 import model.GameData;
 import response.CreateGameResponse;
+import response.ErrorResponse;
 import response.ListGamesResponse;
 
 import java.util.ArrayList;
@@ -57,5 +59,37 @@ public class GameService {
         return listGamesResponse;
     }
 
+    public ErrorResponse joinGame(String authToken, ChessGame.TeamColor color, Integer gameID) {
+        ErrorResponse errorResponse;
+        if (authToken == null || gameID == null) {
+            errorResponse = new ErrorResponse("Error: bad request");
+            return errorResponse;
+        }
 
+        try {
+            AuthDAO authDAO = MemoryAuthDAO.getInstance();
+            AuthData userAuthData = authDAO.getAuth(authToken);
+            if (userAuthData == null) {
+                errorResponse = new ErrorResponse("Error: unauthorized");
+                return errorResponse;
+            }
+
+            GameDAO gameDAO = MemoryGameDAO.getInstance();
+            GameData game = gameDAO.getGame(gameID);
+            if ((color == ChessGame.TeamColor.BLACK && game.blackUsername() != null)
+                    || (color == ChessGame.TeamColor.WHITE && game.whiteUsername() != null)) {
+                errorResponse = new ErrorResponse("Error: already taken");
+                return errorResponse;
+            }
+
+            if (color != null) {
+                gameDAO.joinGame(gameID, color, userAuthData.username());
+            }
+
+        } catch (DataAccessException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        return null;
+    }
 }
