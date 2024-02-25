@@ -1,9 +1,7 @@
 package serviceTests;
 
-import dataAccess.*;
 import model.*;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import response.ErrorResponse;
 import response.LoginResponse;
@@ -14,9 +12,6 @@ import java.lang.reflect.Field;
 
 public class UserServiceTests {
     private UserService UserService = new UserService();
-    UserDAO userDAO;
-    AuthDAO authDAO;
-    GameDAO gameDAO;
 
     @Test
     public void RegisterAddsUserCorrectly() {
