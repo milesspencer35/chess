@@ -50,65 +50,96 @@ public class Server {
     }
 
     private Object registerUser(Request req, Response res) {
-        UserData user = new Gson().fromJson(req.body(), UserData.class);
-        RegisterResponse registerResponse = userService.register(user);
-        res.status(determineStatusCode(registerResponse.message()));
-        return new Gson().toJson(registerResponse);
+        try {
+            UserData user = new Gson().fromJson(req.body(), UserData.class);
+            RegisterResponse registerResponse = userService.register(user);
+            res.status(determineStatusCode(registerResponse.message()));
+            return new Gson().toJson(registerResponse);
+        } catch (Exception ex) {
+            return serverError(res);
+        }
     }
 
     private Object loginUser(Request req, Response res) {
-        UserData user = new Gson().fromJson(req.body(), UserData.class);
-        LoginResponse loginResponse = userService.login(user);
-        res.status(determineStatusCode(loginResponse.message()));
-        return new Gson().toJson(loginResponse);
+        try {
+            UserData user = new Gson().fromJson(req.body(), UserData.class);
+            LoginResponse loginResponse = userService.login(user);
+            res.status(determineStatusCode(loginResponse.message()));
+            return new Gson().toJson(loginResponse);
+        } catch (Exception ex) {
+            return serverError(res);
+        }
     }
 
     private Object logoutUser(Request req, Response res) {
-        String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
-        ErrorResponse logOutErrorResponse = userService.logout(authToken);
-        if (logOutErrorResponse == null) {
-            res.status(200);
-        } else {
-            res.status(determineStatusCode(logOutErrorResponse.message()));
+        try {
+            String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
+            ErrorResponse logOutErrorResponse = userService.logout(authToken);
+            if (logOutErrorResponse == null) {
+                res.status(200);
+            } else {
+                res.status(determineStatusCode(logOutErrorResponse.message()));
+            }
+            return new Gson().toJson(logOutErrorResponse);
+        } catch (Exception ex) {
+            return serverError(res);
         }
-        return new Gson().toJson(logOutErrorResponse);
     }
 
     private Object createGame(Request req, Response res) {
-        String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
-        // TODO change this to a request object
-        GameData game = new Gson().fromJson(req.body(), GameData.class);
-        CreateGameResponse createGameResponse = gameService.createGame(authToken, game.gameName());
-        res.status(determineStatusCode(createGameResponse.message()));
-        return new Gson().toJson(createGameResponse);
+        try {
+            String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
+            // TODO change this to a request object
+            GameData game = new Gson().fromJson(req.body(), GameData.class);
+            CreateGameResponse createGameResponse = gameService.createGame(authToken, game.gameName());
+            res.status(determineStatusCode(createGameResponse.message()));
+            return new Gson().toJson(createGameResponse);
+        } catch (Exception ex) {
+            return serverError(res);
+        }
     }
 
     private Object joinGame(Request req, Response res) {
-        String authToken;
         try {
-            authToken = new Gson().fromJson(req.headers("authorization"), String.class);
-        } catch (JsonSyntaxException ex) {
-            res.status(401);
-            ErrorResponse badAuthErrorResponse = new ErrorResponse("Error: unauthorized");
-            return new Gson().toJson(badAuthErrorResponse);
-        }
+            String authToken;
+            try {
+                authToken = new Gson().fromJson(req.headers("authorization"), String.class);
+            } catch (JsonSyntaxException ex) {
+                res.status(401);
+                ErrorResponse badAuthErrorResponse = new ErrorResponse("Error: unauthorized");
+                return new Gson().toJson(badAuthErrorResponse);
+            }
 
-        JoinRequest joinInfo = new Gson().fromJson(req.body(), JoinRequest.class);
-        ErrorResponse joinGameErrorResponse = gameService.joinGame(authToken, joinInfo.playerColor(), joinInfo.gameID());
-        if (joinGameErrorResponse == null) {
-            res.status(200);
-        } else {
-            res.status(determineStatusCode(joinGameErrorResponse.message()));
+            JoinRequest joinInfo = new Gson().fromJson(req.body(), JoinRequest.class);
+            ErrorResponse joinGameErrorResponse = gameService.joinGame(authToken, joinInfo.playerColor(), joinInfo.gameID());
+            if (joinGameErrorResponse == null) {
+                res.status(200);
+            } else {
+                res.status(determineStatusCode(joinGameErrorResponse.message()));
+            }
+            return new Gson().toJson(joinGameErrorResponse);
+        } catch (Exception ex) {
+            return serverError(res);
         }
-        return new Gson().toJson(joinGameErrorResponse);
     }
 
     private Object listGames(Request req, Response res) {
-        String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
-        ListGamesResponse listGamesResponse = gameService.listGames(authToken);
-        res.status(determineStatusCode(listGamesResponse.message()));
-        return new Gson().toJson(listGamesResponse);
+        try {
+            String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
+            ListGamesResponse listGamesResponse = gameService.listGames(authToken);
+            res.status(determineStatusCode(listGamesResponse.message()));
+            return new Gson().toJson(listGamesResponse);
+        } catch (Exception ex) {
+            return serverError(res);
+        }
     }
+
+    private Object serverError(Response res) {
+        res.status(500);
+        ErrorResponse errorResponse = new ErrorResponse("Error: server error");
+        return new Gson().toJson(errorResponse);
+    }
+
 
     private int determineStatusCode(String message) {
         switch(message){
