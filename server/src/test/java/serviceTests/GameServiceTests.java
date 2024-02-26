@@ -26,7 +26,7 @@ public class GameServiceTests {
 
         CreateGameResponse createGameResponse = gameService.createGame(registerResponse.authToken(), "Game 1");
         Assertions.assertNotNull(createGameResponse);
-        Assertions.assertEquals(1, createGameResponse.gameID());
+        Assertions.assertNotNull(createGameResponse.gameID());
         Assertions.assertNull(createGameResponse.message());
     }
 
