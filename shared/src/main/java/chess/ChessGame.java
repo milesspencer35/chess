@@ -132,13 +132,7 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         if (isInCheck(teamColor)) {
-            ArrayList<ChessPosition> piecePositions = (ArrayList<ChessPosition>) getPiecePositions();
-            for(ChessPosition pos: piecePositions) {
-                if (board.getPiece(pos).getTeamColor() == teamColor && !validMoves(pos).isEmpty()) {
-                    return false;
-                }
-            }
-            return true;
+            return checkForMoves(teamColor);
         }
         return false;
     }
@@ -152,13 +146,7 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         if (teamTurnColor == teamColor) {
-            ArrayList<ChessPosition> piecePositions = (ArrayList<ChessPosition>) getPiecePositions();
-            for(ChessPosition pos: piecePositions) {
-                if (board.getPiece(pos).getTeamColor() == teamColor && !validMoves(pos).isEmpty()) {
-                    return false;
-                }
-            }
-            return true;
+            return checkForMoves(teamColor);
         }
         return false;
     }
@@ -204,5 +192,16 @@ public class ChessGame {
         }
         return piecePositions;
     }
+
+    private boolean checkForMoves(TeamColor teamColor) {
+        ArrayList<ChessPosition> piecePositions = (ArrayList<ChessPosition>) getPiecePositions();
+        for(ChessPosition pos: piecePositions) {
+            if (board.getPiece(pos).getTeamColor() == teamColor && !validMoves(pos).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
 }
