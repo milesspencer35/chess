@@ -1,7 +1,7 @@
 package dataAccess;
 
 import model.UserData;
-import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -18,27 +18,27 @@ public class MemoryUserDAO implements UserDAO {
         return instance;
     }
 
-    private Map<String,UserData> Users = new HashMap<>();
+    private Map<String,UserData> users = new HashMap<>();
 
     @Override
     public void clear() {
-        Users.clear();
+        users.clear();
     }
 
     @Override
     public UserData getUser(String username) {
-        return Users.get(username);
+        return users.get(username);
     }
 
     @Override
     public void createUser(String username, String password, String email) {
         UserData newUser = new UserData(username, password, email);
-        Users.put(username, newUser);
+        users.put(username, newUser);
     }
 
     @Override
     public UserData verifyUser(String username, String password) {
-        UserData user = Users.get(username);
+        UserData user = users.get(username);
         if (user != null && Objects.equals(user.password(), password)) {
             return user;
         } else {
@@ -48,6 +48,6 @@ public class MemoryUserDAO implements UserDAO {
 
     @Override
     public int numberOfUsers() {
-        return Users.size();
+        return users.size();
     }
 }

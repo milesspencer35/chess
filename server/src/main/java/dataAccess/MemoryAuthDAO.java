@@ -16,33 +16,33 @@ public class MemoryAuthDAO implements AuthDAO {
         return instance;
     }
 
-    private Map<String,AuthData> Auths = new HashMap<>();
+    private Map<String,AuthData> auths = new HashMap<>();
 
     @Override
     public void clear() {
-        Auths.clear();
+        auths.clear();
     }
 
     @Override
     public AuthData createAuth(String username) {
         String authToken = UUID.randomUUID().toString();
         AuthData newAuth = new AuthData(authToken, username);
-        Auths.put(authToken, newAuth);
+        auths.put(authToken, newAuth);
         return newAuth;
     }
 
     @Override
     public AuthData getAuth(String authToken) {
-        return Auths.get(authToken);
+        return auths.get(authToken);
     }
 
     @Override
     public void deleteAuth(String authToken) {
-        Auths.remove(authToken);
+        auths.remove(authToken);
     }
 
     @Override
     public int numberOfAuths() {
-        return Auths.size();
+        return auths.size();
     }
 }
