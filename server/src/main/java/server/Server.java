@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import model.GameData;
 import model.UserData;
+import request.JoinRequest;
 import response.*;
 import service.ClearService;
 import service.GameService;
@@ -24,13 +25,13 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-//        Spark.init();
         Spark.delete("/db", this::clearApp);
         Spark.post("/user", this::registerUser);
         Spark.post("/session", this::loginUser);
         Spark.delete("/session", this::logoutUser);
         Spark.post("/game", this::createGame);
-//        Spark.get("/game", this::listGames);
+        Spark.put("/game", this::joinGame);
+        Spark.get("/game", this::listGames);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -74,19 +75,30 @@ public class Server {
 
     private Object createGame(Request req, Response res) {
         String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
-        GameData gameName = new Gson().fromJson(req.body(), GameData.class);
-        CreateGameResponse createGameResponse = gameService.createGame(authToken, gameName.gameName());
+        GameData game = new Gson().fromJson(req.body(), GameData.class);
+        CreateGameResponse createGameResponse = gameService.createGame(authToken, game.gameName());
         res.status(determineStatusCode(createGameResponse.message()));
         return new Gson().toJson(createGameResponse);
     }
 
-//    private Object listGames(Request req, Response res) {
-//        String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
-//        ListGamesResponse listGamesResponse = gameService.listGames(authToken);
-//        res.status(determineStatusCode(listGamesResponse.message()));
-//        return new Gson().toJson(listGamesResponse);
-//    }
+    private Object joinGame(Request req, Response res) {
+        String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
+        JoinRequest joinInfo = new Gson().fromJson(req.body(), JoinRequest.class);
+        ErrorResponse joinGameErrorResponse = gameService.joinGame(authToken, joinInfo.playerColor(), joinInfo.gameID());
+        if (joinGameErrorResponse == null) {
+            res.status(200);
+        } else {
+            res.status(determineStatusCode(joinGameErrorResponse.message()));
+        }
+        return new Gson().toJson(joinGameErrorResponse);
+    }
 
+    private Object listGames(Request req, Response res) {
+        String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
+        ListGamesResponse listGamesResponse = gameService.listGames(authToken);
+        res.status(determineStatusCode(listGamesResponse.message()));
+        return new Gson().toJson(listGamesResponse);
+    }
 
     private int determineStatusCode(String message) {
         switch(message){

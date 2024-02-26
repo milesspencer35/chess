@@ -76,6 +76,10 @@ public class GameService {
 
             GameDAO gameDAO = MemoryGameDAO.getInstance();
             GameData game = gameDAO.getGame(gameID);
+            if (game == null) {
+                errorResponse = new ErrorResponse("Error: bad request");
+                return errorResponse;
+            }
             if ((color == ChessGame.TeamColor.BLACK && game.blackUsername() != null)
                     || (color == ChessGame.TeamColor.WHITE && game.whiteUsername() != null)) {
                 errorResponse = new ErrorResponse("Error: already taken");
