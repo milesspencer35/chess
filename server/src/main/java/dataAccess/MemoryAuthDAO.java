@@ -41,8 +41,4 @@ public class MemoryAuthDAO implements AuthDAO {
         auths.remove(authToken);
     }
 
-    @Override
-    public int numberOfAuths() {
-        return auths.size();
-    }
 }
