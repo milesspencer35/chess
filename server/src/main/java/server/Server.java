@@ -90,7 +90,6 @@ public class Server {
     private Object createGame(Request req, Response res) {
         try {
             String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
-            // TODO change this to a request object
             CreateGameRequest game = new Gson().fromJson(req.body(), CreateGameRequest.class);
             CreateGameResponse createGameResponse = gameService.createGame(authToken, game.gameName());
             res.status(determineStatusCode(createGameResponse.message()));
