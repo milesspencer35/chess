@@ -51,10 +51,10 @@ public class UserService {
         }
         return loginResponse;
     }
-    public ErrorResponse logout(AuthData authData) {
+    public ErrorResponse logout(String authToken) {
         try {
             AuthDAO authDAO = MemoryAuthDAO.getInstance();
-            AuthData userAuthData = authDAO.getAuth(authData.authToken());
+            AuthData userAuthData = authDAO.getAuth(authToken);
             if (userAuthData == null) {
                 ErrorResponse errorResponse = new ErrorResponse("Error: unauthorized");
                 return errorResponse;

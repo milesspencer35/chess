@@ -87,9 +87,8 @@ public class UserServiceTests {
         UserData user = new UserData("Peter", "pete123", "peter@gmail.com");
         UserService.register(user);
         LoginResponse loginResponse = UserService.login(user);
-        AuthData authData = new AuthData(loginResponse.authToken(), loginResponse.username());
 
-        ErrorResponse errorResponse = UserService.logout(authData);
+        ErrorResponse errorResponse = UserService.logout(loginResponse.authToken());
         Assertions.assertNull(errorResponse);
     }
 
@@ -98,9 +97,8 @@ public class UserServiceTests {
         UserData user = new UserData("Jimmy", "Jimbo58", "jimmy@gmail.com");
         UserService.register(user);
         LoginResponse loginResponse = UserService.login(user);
-        AuthData authData = new AuthData("123", loginResponse.username());
 
-        ErrorResponse errorResponse = UserService.logout(authData);
+        ErrorResponse errorResponse = UserService.logout("123");
         Assertions.assertNotNull(errorResponse);
         Assertions.assertEquals("Error: unauthorized", errorResponse.message());
     }
