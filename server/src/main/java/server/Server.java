@@ -5,6 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.internal.LinkedTreeMap;
 import model.GameData;
 import model.UserData;
+import request.CreateGameRequest;
 import request.JoinRequest;
 import response.*;
 import service.ClearService;
@@ -90,7 +91,7 @@ public class Server {
         try {
             String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
             // TODO change this to a request object
-            GameData game = new Gson().fromJson(req.body(), GameData.class);
+            CreateGameRequest game = new Gson().fromJson(req.body(), CreateGameRequest.class);
             CreateGameResponse createGameResponse = gameService.createGame(authToken, game.gameName());
             res.status(determineStatusCode(createGameResponse.message()));
             return new Gson().toJson(createGameResponse);
