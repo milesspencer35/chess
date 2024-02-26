@@ -1,8 +1,11 @@
 package chess;
 
+import chess.moveCalculator.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import chess.moveCalculator.*;
 
 /**
  * Represents a single chess piece

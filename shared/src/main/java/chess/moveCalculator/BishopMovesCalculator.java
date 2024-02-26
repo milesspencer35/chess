@@ -1,11 +1,14 @@
-package chess;
+package chess.moveCalculator;
 
+import chess.ChessBoard;
+import chess.ChessMove;
+import chess.ChessPosition;
 import chess.moveCalculator.PieceMovesCalculator;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-class BishopMovesCalculator implements PieceMovesCalculator {
+public class BishopMovesCalculator implements PieceMovesCalculator {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> possibleMoves = new ArrayList<ChessMove>();
 
