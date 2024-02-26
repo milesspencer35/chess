@@ -153,7 +153,7 @@ public class ChessBoard implements Cloneable {
     public ChessBoard clone() {
         try {
             ChessBoard clone = (ChessBoard) super.clone();
-            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            // copy mutable state here, so the clone can't change the internals of the original
             clone.board = new ChessPiece[9][9];
 
             for (int i = 1; i < 9; i++) {
