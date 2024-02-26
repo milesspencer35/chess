@@ -2,46 +2,40 @@ package serviceTests;
 
 
 import dataAccess.*;
+import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import response.CreateGameResponse;
+import response.RegisterResponse;
 import service.ClearService;
+import service.GameService;
+import service.UserService;
 
 public class ClearServiceTests {
 
     private ClearService clearService = new ClearService();
-    UserDAO userDAO;
-    AuthDAO authDAO;
-    GameDAO gameDAO;
-
-    @BeforeEach
-    public void setUp() {
-        gameDAO = MemoryGameDAO.getInstance();
-        userDAO = MemoryUserDAO.getInstance();
-        authDAO = MemoryAuthDAO.getInstance();
-    }
+    private UserService userService = new UserService();
+    private GameService gameService = new GameService();
 
     @Test
     public void testClearApplication() {
-        try {
-            int game1 = gameDAO.createGame("myGame");
-            int game2 = gameDAO.createGame("myGame2");
-            Assertions.assertNotEquals(0, gameDAO.listGames().size(), "Assert there are games");
 
-            userDAO.createUser("Miles", "Hello123", "miles@gmail.com");
-            userDAO.createUser("Jamal", "BYU123", "jamal@gmail.com");
-            Assertions.assertNotEquals(0, userDAO.numberOfUsers(), "Assert there are Users");
+        UserData user1 = new UserData("Miles", "Hello123", "miles@gmail.com");
+        UserData user2 = new UserData("Jamal", "BYU123", "jamal@gmail.com");
+        RegisterResponse registerResponse1 = userService.register(user1);
+        RegisterResponse registerResponse2 = userService.register(user2);
+        Assertions.assertNotNull(userService.login(user1).authToken(), "User1 exists");
+        Assertions.assertNotNull(userService.login(user2).authToken(), "User2 exists");
 
-            authDAO.createAuth("Miles");
-            authDAO.createAuth("Jamal");
-            Assertions.assertNotEquals(0, authDAO.numberOfAuths(), "Assert there are Auths");
+        CreateGameResponse createGameResponse1 = gameService.createGame(registerResponse1.authToken(), "GameTime!");
+        CreateGameResponse createGameResponse2 = gameService.createGame(registerResponse2.authToken(), "GameTime2");
+        Assertions.assertNotNull(gameService.listGames(registerResponse1.authToken()).games(), "There are games");
 
-            clearService.clearApplication();
-            Assertions.assertEquals(0, gameDAO.listGames().size(), "Assert number of games == 0");
-            Assertions.assertEquals(0, userDAO.numberOfUsers(), "Assert number of Users == 0");
-            Assertions.assertEquals(0, authDAO.numberOfAuths(), "Assert number of Auths == 0");
-        } catch (DataAccessException ex) {
-            System.out.println(ex.getMessage());
-        }
+        clearService.clearApplication();
+        Assertions.assertNull(userService.login(user1).authToken());
+        Assertions.assertNull(userService.login(user2).authToken());
+        Assertions.assertNull(gameService.listGames(registerResponse1.authToken()).games());
+
     }
 }
