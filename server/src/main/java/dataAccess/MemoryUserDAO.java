@@ -4,6 +4,7 @@ import model.UserData;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class MemoryUserDAO implements UserDAO {
     // Implementing singleton principle
@@ -38,7 +39,7 @@ public class MemoryUserDAO implements UserDAO {
     @Override
     public UserData verifyUser(String username, String password) {
         UserData user = Users.get(username);
-        if (user != null && user.password() == password) {
+        if (user != null && Objects.equals(user.password(), password)) {
             return user;
         } else {
             return null;
