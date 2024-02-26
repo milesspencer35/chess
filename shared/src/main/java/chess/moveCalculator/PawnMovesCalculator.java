@@ -11,10 +11,76 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
     ChessPiece.PieceType[] promotionArray = new ChessPiece.PieceType[]
             {ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.ROOK};
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return possiblePawnMoves(board, myPosition);
+        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
+        possibleMoves.addAll(possibleBlackPawnMoves(board, myPosition));
+        possibleMoves.addAll(possibleWhitePawnMoves(board, myPosition));
+        return possibleMoves;
     }
 
-    private Collection<ChessMove> possiblePawnMoves(ChessBoard board, ChessPosition myPosition) {
+    private Collection<ChessMove> possibleBlackPawnMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> possibleMoves = new ArrayList<ChessMove>();
+
+        // Black PAWN check for move forward 1, forward promotion, and move forward 2
+        ChessPosition blackOneForward = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn());
+        if (board.getPiece(blackOneForward) == null && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
+            //Test for promotion
+            if (myPosition.getRow() - 1 == 1) {
+                for (ChessPiece.PieceType promotion : promotionArray) {
+                    ChessMove newChessMove = new ChessMove(myPosition, blackOneForward, promotion);
+                    possibleMoves.add(newChessMove);
+                }
+            } else {
+                ChessMove newChessMove = new ChessMove(myPosition, blackOneForward, null);
+                possibleMoves.add(newChessMove);
+            }
+
+            ChessPosition blackTwoForward = new ChessPosition(myPosition.getRow() - 2, myPosition.getColumn());
+            if (myPosition.getRow() == 7 && board.getPiece(blackTwoForward) == null) {
+                ChessMove newChessMove = new ChessMove(myPosition, blackTwoForward, null);
+                possibleMoves.add(newChessMove);
+            }
+        }
+
+
+        //Move diagonal if opposite color piece in diagonal spot
+        ChessPosition blackDiagonalRight = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1);
+        ChessPosition blackDiagonalLeft = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1);
+        if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
+            if (blackDiagonalRight.getColumn() < 9
+                    && board.getPiece(blackDiagonalRight) != null
+                    && board.getPiece(blackDiagonalRight).getTeamColor() != ChessGame.TeamColor.BLACK) {
+                if (myPosition.getRow() - 1 == 1) {
+                    for (ChessPiece.PieceType promotion : promotionArray) {
+                        ChessMove newChessMove = new ChessMove(myPosition, blackDiagonalRight, promotion);
+                        possibleMoves.add(newChessMove);
+                    }
+                }
+                else {
+                    ChessMove newChessMove = new ChessMove(myPosition, blackDiagonalRight, null);
+                    possibleMoves.add(newChessMove);
+                }
+            }
+
+            if (blackDiagonalLeft.getColumn() > 0
+                    && board.getPiece(blackDiagonalLeft) != null
+                    && board.getPiece(blackDiagonalLeft).getTeamColor() != ChessGame.TeamColor.BLACK) {
+                if (myPosition.getRow() - 1 == 1) {
+                    for (ChessPiece.PieceType promotion : promotionArray) {
+                        ChessMove newChessMove = new ChessMove(myPosition, blackDiagonalLeft, promotion);
+                        possibleMoves.add(newChessMove);
+                    }
+                }
+                else {
+                    ChessMove newChessMove = new ChessMove(myPosition, blackDiagonalLeft, null);
+                    possibleMoves.add(newChessMove);
+                }
+            }
+        }
+
+        return possibleMoves;
+    }
+
+    private Collection<ChessMove> possibleWhitePawnMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> possibleMoves = new ArrayList<ChessMove>();
 
         // White PAWN check for move forward 1, forward promotion, and move forward 2
@@ -37,27 +103,6 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             ChessPosition whiteTwoForward = new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn());
             if (myPosition.getRow() == 2 && board.getPiece(whiteTwoForward) == null) {
                 ChessMove newChessMove = new ChessMove(myPosition, whiteTwoForward, null);
-                possibleMoves.add(newChessMove);
-            }
-        }
-
-        // Black PAWN check for move forward 1, forward promotion, and move forward 2
-        ChessPosition blackOneForward = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn());
-        if (board.getPiece(blackOneForward) == null && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
-            //Test for promotion
-            if (myPosition.getRow() - 1 == 1) {
-                for (ChessPiece.PieceType promotion : promotionArray) {
-                    ChessMove newChessMove = new ChessMove(myPosition, blackOneForward, promotion);
-                    possibleMoves.add(newChessMove);
-                }
-            } else {
-                ChessMove newChessMove = new ChessMove(myPosition, blackOneForward, null);
-                possibleMoves.add(newChessMove);
-            }
-
-            ChessPosition blackTwoForward = new ChessPosition(myPosition.getRow() - 2, myPosition.getColumn());
-            if (myPosition.getRow() == 7 && board.getPiece(blackTwoForward) == null) {
-                ChessMove newChessMove = new ChessMove(myPosition, blackTwoForward, null);
                 possibleMoves.add(newChessMove);
             }
         }
@@ -98,43 +143,10 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             }
         }
 
-        //Move diagonal if opposite color piece in diagonal spot
-        ChessPosition blackDiagonalRight = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1);
-        ChessPosition blackDiagonalLeft = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1);
-        if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
-            if (blackDiagonalRight.getColumn() < 9
-                    && board.getPiece(blackDiagonalRight) != null
-                    && board.getPiece(blackDiagonalRight).getTeamColor() != ChessGame.TeamColor.BLACK) {
-                if (myPosition.getRow() - 1 == 1) {
-                    for (ChessPiece.PieceType promotion : promotionArray) {
-                        ChessMove newChessMove = new ChessMove(myPosition, blackDiagonalRight, promotion);
-                        possibleMoves.add(newChessMove);
-                    }
-                }
-                else {
-                    ChessMove newChessMove = new ChessMove(myPosition, blackDiagonalRight, null);
-                    possibleMoves.add(newChessMove);
-                }
-            }
-
-            if (blackDiagonalLeft.getColumn() > 0
-                    && board.getPiece(blackDiagonalLeft) != null
-                    && board.getPiece(blackDiagonalLeft).getTeamColor() != ChessGame.TeamColor.BLACK) {
-                if (myPosition.getRow() - 1 == 1) {
-                    for (ChessPiece.PieceType promotion : promotionArray) {
-                        ChessMove newChessMove = new ChessMove(myPosition, blackDiagonalLeft, promotion);
-                        possibleMoves.add(newChessMove);
-                    }
-                }
-                else {
-                    ChessMove newChessMove = new ChessMove(myPosition, blackDiagonalLeft, null);
-                    possibleMoves.add(newChessMove);
-                }
-            }
-        }
-
         return possibleMoves;
     }
+
+
 }
 
 
