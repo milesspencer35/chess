@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.internal.LinkedTreeMap;
 import model.GameData;
 import model.UserData;
@@ -75,6 +76,7 @@ public class Server {
 
     private Object createGame(Request req, Response res) {
         String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
+        // TODO change this to a request object
         GameData game = new Gson().fromJson(req.body(), GameData.class);
         CreateGameResponse createGameResponse = gameService.createGame(authToken, game.gameName());
         res.status(determineStatusCode(createGameResponse.message()));
@@ -82,7 +84,15 @@ public class Server {
     }
 
     private Object joinGame(Request req, Response res) {
-        String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
+        String authToken;
+        try {
+            authToken = new Gson().fromJson(req.headers("authorization"), String.class);
+        } catch (JsonSyntaxException ex) {
+            res.status(401);
+            ErrorResponse badAuthErrorResponse = new ErrorResponse("Error: unauthorized");
+            return new Gson().toJson(badAuthErrorResponse);
+        }
+
         JoinRequest joinInfo = new Gson().fromJson(req.body(), JoinRequest.class);
         ErrorResponse joinGameErrorResponse = gameService.joinGame(authToken, joinInfo.playerColor(), joinInfo.gameID());
         if (joinGameErrorResponse == null) {
