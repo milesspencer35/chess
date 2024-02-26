@@ -58,7 +58,8 @@ public class ChessMove {
         return this.promotionPiece;
     }
 
-    public String ToString() {
+    @Override
+    public String toString() {
         return "EndPosition: {" + endPosition.getRow() + "," + endPosition.getColumn() + "}";
     }
 

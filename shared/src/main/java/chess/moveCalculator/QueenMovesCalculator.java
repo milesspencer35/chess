@@ -1,9 +1,11 @@
 package chess;
 
+import chess.moveCalculator.PieceMovesCalculator;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class QueenMovesCalculator implements PieceMovesCalculator{
+public class QueenMovesCalculator implements PieceMovesCalculator {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> possibleMoves = new ArrayList<ChessMove>();
 
