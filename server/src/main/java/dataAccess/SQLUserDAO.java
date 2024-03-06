@@ -28,7 +28,7 @@ public class SQLUserDAO extends DAO implements UserDAO{
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        String sql = "SELECT username, password, email FROM users WHERE username = " + username;
+        var sql = "SELECT username, password, email FROM users WHERE username = '" + username + "'";
 
         Connection connection = null;
         try (Connection c = DatabaseManager.getConnection()) {
