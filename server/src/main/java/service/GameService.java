@@ -2,6 +2,8 @@ package service;
 
 import chess.ChessGame;
 import dataAccess.*;
+import dataAccess.memoryDao.MemoryAuthDAO;
+import dataAccess.memoryDao.MemoryGameDAO;
 import model.AuthData;
 import model.GameData;
 import response.CreateGameResponse;
@@ -9,7 +11,6 @@ import response.ErrorResponse;
 import response.ListGamesResponse;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class GameService {
     public CreateGameResponse createGame(String authToken, String gameName) {
