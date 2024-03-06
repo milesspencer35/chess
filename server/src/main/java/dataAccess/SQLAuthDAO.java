@@ -2,10 +2,13 @@ package dataAccess;
 
 import model.AuthData;
 
-public class SQLAuthDAO implements AuthDAO {
+public class SQLAuthDAO extends DAO implements AuthDAO {
+    public SQLAuthDAO() throws DataAccessException {
+    }
+
     @Override
     public void clear() throws DataAccessException {
-        
+
     }
 
     @Override

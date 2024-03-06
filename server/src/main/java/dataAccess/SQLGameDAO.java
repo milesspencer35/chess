@@ -5,7 +5,10 @@ import model.GameData;
 
 import java.util.ArrayList;
 
-public class SQLGameDAO implements GameDAO {
+public class SQLGameDAO extends DAO implements GameDAO {
+    public SQLGameDAO() throws DataAccessException {
+    }
+
     @Override
     public void clear() throws DataAccessException {
 

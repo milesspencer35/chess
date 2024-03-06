@@ -2,7 +2,10 @@ package dataAccess;
 
 import model.UserData;
 
-public class SQLUserDAO implements UserDAO{
+public class SQLUserDAO extends DAO implements UserDAO{
+    public SQLUserDAO() throws DataAccessException {
+    }
+
     @Override
     public void clear() throws DataAccessException {
 
