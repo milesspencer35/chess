@@ -76,6 +76,17 @@ public class SQLAuthDAO extends DAO implements AuthDAO {
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
+        String sql = "DELETE FROM auth WHERE authToken = ?";
 
+        Connection connection = null;
+        try (Connection c = DatabaseManager.getConnection()) {
+            connection = c;
+            try(PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, authToken);
+                stmt.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
     }
 }
