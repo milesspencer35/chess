@@ -42,7 +42,7 @@ public class DAO {
               `whiteUsername` varchar(256),
               `blackUsername` varchar(256),
               `gameName` varchar(256) NOT NULL,
-              `game` BLOB NOT NULL,
+              `game` JSON NOT NULL,
               PRIMARY KEY (`gameID`)
             )
             """
