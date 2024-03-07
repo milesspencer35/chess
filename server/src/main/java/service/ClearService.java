@@ -10,7 +10,7 @@ public class ClearService {
         try {
             UserDAO userDao = new SQLUserDAO();
             userDao.clear();
-            AuthDAO authDao = MemoryAuthDAO.getInstance();
+            AuthDAO authDao = new SQLAuthDAO();
             authDao.clear();
             GameDAO gameDao = MemoryGameDAO.getInstance();
             gameDao.clear();

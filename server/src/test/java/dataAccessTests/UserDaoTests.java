@@ -22,7 +22,7 @@ public class UserDaoTests {
 
 
     @Test
-   public void createUserCorrectly() throws DataAccessException {
+    public void createUserCorrectly() throws DataAccessException {
        userDAO.createUser("Johnny", "johnny123", "johnny@gmail.com");
        UserData user = userDAO.getUser("Johnny");
 

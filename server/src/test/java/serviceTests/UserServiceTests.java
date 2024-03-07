@@ -2,16 +2,24 @@ package serviceTests;
 
 import model.*;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import response.ErrorResponse;
 import response.LoginResponse;
 import response.RegisterResponse;
+import service.ClearService;
 import service.UserService;
 
 import java.lang.reflect.Field;
 
 public class UserServiceTests {
     private UserService UserService = new UserService();
+    private ClearService clearService = new ClearService();
+    @BeforeEach
+    public void clearDatabase() {
+        clearService.clearApplication();
+    }
+
 
     @Test
     public void RegisterAddsUserCorrectly() {
