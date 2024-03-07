@@ -7,7 +7,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Objects;
 
 public class SQLUserDAO extends DAO implements UserDAO{
     public SQLUserDAO() throws DataAccessException {

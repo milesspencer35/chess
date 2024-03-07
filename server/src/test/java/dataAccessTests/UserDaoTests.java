@@ -56,6 +56,23 @@ public class UserDaoTests {
         Assertions.assertNull(user);
     }
 
+    @Test
+    public void verifyUserCorrectly() throws DataAccessException {
+        userDAO.createUser("Juan", "Juan123", "juan@gmail.com");
+        UserData verifiedUser = userDAO.verifyUser("Juan", "Juan123");
+
+        Assertions.assertEquals("Juan", verifiedUser.username());
+        Assertions.assertNotNull(verifiedUser.password());
+        Assertions.assertEquals("juan@gmail.com", verifiedUser.email());
+    }
+
+    @Test
+    public void verifyUserWithWrongPassword() throws DataAccessException {
+        userDAO.createUser("JuanPablo", "JuanPablo123", "juanpablo@gmail.com");
+        UserData verifiedUser = userDAO.verifyUser("JuanPablo", "JohnPaul123");
+
+        Assertions.assertNull(verifiedUser);
+    }
 
     @Test
     public void clearTest( ) throws DataAccessException {
