@@ -7,7 +7,6 @@ import dataAccess.UserDAO;
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class UserDaoTests {
@@ -29,7 +28,7 @@ public class UserDaoTests {
 
         Assertions.assertNotNull(user);
         Assertions.assertEquals("Johnny", user.username());
-        Assertions.assertEquals("johnny123", user.password());
+        Assertions.assertNotNull(user.password());
         Assertions.assertEquals("johnny@gmail.com", user.email());
     }
 
@@ -46,7 +45,7 @@ public class UserDaoTests {
 
         Assertions.assertNotNull(user);
         Assertions.assertEquals("Ty", user.username());
-        Assertions.assertEquals("ty123", user.password());
+        Assertions.assertNotNull(user.password());
         Assertions.assertEquals("ty@gmail.com", user.email());
     }
 
@@ -59,8 +58,20 @@ public class UserDaoTests {
 
 
     @Test
-    public void clearTest( ) {
+    public void clearTest( ) throws DataAccessException {
+        userDAO.createUser("Ryan", "ryan123", "ryan@gmail.com" );
+        userDAO.createUser("Ty", "ty123", "ty@gmail.com");
+        UserData user1 = userDAO.getUser("Ryan");
+        UserData user2 = userDAO.getUser("Ty");
+        Assertions.assertNotNull(user1);
+        Assertions.assertNotNull(user2);
 
+        userDAO.clear();
+
+        user1 = userDAO.getUser("Ryan");
+        user2 = userDAO.getUser("Ty");
+        Assertions.assertNull(user1);
+        Assertions.assertNull(user2);
     }
 
 }

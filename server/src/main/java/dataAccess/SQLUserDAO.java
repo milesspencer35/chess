@@ -1,6 +1,7 @@
 package dataAccess;
 
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -60,17 +61,23 @@ public class SQLUserDAO extends DAO implements UserDAO{
             connection = c;
             try(PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, username);
-                stmt.setString(2, password);
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                String hashedPassword = encoder.encode(password);
+                stmt.setString(2, hashedPassword);
                 stmt.setString(3, email);
                 stmt.executeUpdate();
             }
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             throw new DataAccessException(ex.getMessage());
         }
     }
 
     @Override
     public UserData verifyUser(String username, String password) throws DataAccessException {
+
+
+//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+//        return encoder.matches(providedClearTextPassword, hashedPassword);
         return null;
     }
 }
