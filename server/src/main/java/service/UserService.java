@@ -1,8 +1,6 @@
 package service;
 
 import dataAccess.*;
-import dataAccess.memoryDao.MemoryAuthDAO;
-import dataAccess.memoryDao.MemoryUserDAO;
 import model.*;
 import response.ErrorResponse;
 import response.LoginResponse;
@@ -39,7 +37,7 @@ public class UserService {
         LoginResponse loginResponse = null;
         try {
             UserDAO userDAO = new SQLUserDAO();
-            AuthDAO authDAO = MemoryAuthDAO.getInstance();
+            AuthDAO authDAO = new SQLAuthDAO();
             UserData verifiedUser = userDAO.verifyUser(user.username(), user.password());
             if (verifiedUser == null) {
                 return new LoginResponse(null, null, "Error: unauthorized");
@@ -56,7 +54,7 @@ public class UserService {
 
     public ErrorResponse logout(String authToken) {
         try {
-            AuthDAO authDAO = MemoryAuthDAO.getInstance();
+            AuthDAO authDAO = new SQLAuthDAO();
             AuthData userAuthData = authDAO.getAuth(authToken);
             if (userAuthData == null) {
                 ErrorResponse errorResponse = new ErrorResponse("Error: unauthorized");
