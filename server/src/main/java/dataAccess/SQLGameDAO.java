@@ -117,30 +117,34 @@ public class SQLGameDAO extends DAO implements GameDAO {
 
     @Override
     public void joinGame(Integer gameID, ChessGame.TeamColor color, String username) throws DataAccessException {
-        GameData game = getGame(gameID);
+        try {
+            GameData game = getGame(gameID);
 
-        String whiteUsername = game.whiteUsername();
-        String blackUsername = game.blackUsername();
-        if (color == ChessGame.TeamColor.BLACK) {
-            blackUsername = username;
-        } else if (color == ChessGame.TeamColor.WHITE) {
-            whiteUsername = username;
-        }
-
-        String sql = "update game " +
-                "set whiteUsername = ?, blackUsername = ? " +
-                "where gameID = ?";
-
-        Connection connection = null;
-        try (Connection c = DatabaseManager.getConnection()) {
-            connection = c;
-            try(PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setString(1, whiteUsername);
-                stmt.setString(2, blackUsername);
-                stmt.setInt(3, gameID);
-                stmt.executeUpdate();
+            String whiteUsername = game.whiteUsername();
+            String blackUsername = game.blackUsername();
+            if (color == ChessGame.TeamColor.BLACK) {
+                blackUsername = username;
+            } else if (color == ChessGame.TeamColor.WHITE) {
+                whiteUsername = username;
             }
-        } catch (SQLException ex) {
+
+            String sql = "update game " +
+                    "set whiteUsername = ?, blackUsername = ? " +
+                    "where gameID = ?";
+
+            Connection connection = null;
+            try (Connection c = DatabaseManager.getConnection()) {
+                connection = c;
+                try(PreparedStatement stmt = connection.prepareStatement(sql)) {
+                    stmt.setString(1, whiteUsername);
+                    stmt.setString(2, blackUsername);
+                    stmt.setInt(3, gameID);
+                    stmt.executeUpdate();
+                }
+            } catch (SQLException ex) {
+                throw new DataAccessException(ex.getMessage());
+            }
+        } catch (Exception ex) {
             throw new DataAccessException(ex.getMessage());
         }
     }
