@@ -3,11 +3,13 @@ package serviceTests;
 import chess.ChessGame;
 import model.*;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import response.CreateGameResponse;
 import response.ErrorResponse;
 import response.ListGamesResponse;
 import response.RegisterResponse;
+import service.ClearService;
 import service.GameService;
 import service.UserService;
 import spark.utils.Assert;
@@ -18,6 +20,13 @@ import java.util.stream.Stream;
 public class GameServiceTests {
     GameService gameService = new GameService();
     UserService userService = new UserService();
+    ClearService clearService = new ClearService();
+
+    @BeforeEach
+    public void setup() {
+        clearService.clearApplication();
+    }
+
 
     @Test
     public void CreateGameCorrectly() {
