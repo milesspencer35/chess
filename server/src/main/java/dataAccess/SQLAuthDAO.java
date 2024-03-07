@@ -1,9 +1,6 @@
 package dataAccess;
 
 import model.AuthData;
-import model.UserData;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -64,7 +61,7 @@ public class SQLAuthDAO extends DAO implements AuthDAO {
                 if (rs.next()) {
                     String rsUsername = rs.getString(1);
                     String rsAuthToken = rs.getString(2);
-                    return new AuthData(rsUsername, rsAuthToken);
+                    return new AuthData(rsAuthToken, rsUsername);
                 } else {
                     return null;
                 }
