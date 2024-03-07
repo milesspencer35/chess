@@ -8,7 +8,7 @@ import dataAccess.memoryDao.MemoryUserDAO;
 public class ClearService {
     public void clearApplication() {
         try {
-            UserDAO userDao = MemoryUserDAO.getInstance();
+            UserDAO userDao = new SQLUserDAO();
             userDao.clear();
             AuthDAO authDao = MemoryAuthDAO.getInstance();
             authDao.clear();
