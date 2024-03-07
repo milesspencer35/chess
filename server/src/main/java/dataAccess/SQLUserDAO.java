@@ -28,16 +28,23 @@ public class SQLUserDAO extends DAO implements UserDAO{
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        var sql = "SELECT username, password, email FROM users WHERE username = '" + username + "'";
+        var sql = "SELECT username, password, email FROM user WHERE username = ?";
 
         Connection connection = null;
         try (Connection c = DatabaseManager.getConnection()) {
             connection = c;
-            try(PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
-                String rsUsername = rs.getString(1);
-                String rsPassword = rs.getString(2);
-                String rsEmail = rs.getString(3);
-                return new UserData(rsUsername, rsPassword, rsEmail);
+            try(PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, username);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) { // make sure this goes into if when there is a user
+                    String rsUsername = rs.getString(1);
+                    String rsPassword = rs.getString(2);
+                    String rsEmail = rs.getString(3);
+                    return new UserData(rsUsername, rsPassword, rsEmail);
+                } else {
+                    return null;
+                }
+
             }
         } catch (SQLException ex) {
             throw new DataAccessException(ex.getMessage());
@@ -51,7 +58,7 @@ public class SQLUserDAO extends DAO implements UserDAO{
         Connection connection = null;
         try (Connection c = DatabaseManager.getConnection()) {
             connection = c;
-            try(PreparedStatement stmt = connection.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            try(PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, username);
                 stmt.setString(2, password);
                 stmt.setString(3, email);
