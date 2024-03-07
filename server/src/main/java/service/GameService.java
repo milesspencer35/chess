@@ -2,8 +2,6 @@ package service;
 
 import chess.ChessGame;
 import dataAccess.*;
-import dataAccess.memoryDao.MemoryAuthDAO;
-import dataAccess.memoryDao.MemoryGameDAO;
 import model.AuthData;
 import model.GameData;
 import response.CreateGameResponse;
@@ -21,7 +19,7 @@ public class GameService {
         }
 
         try {
-            AuthDAO authDAO = MemoryAuthDAO.getInstance();
+            AuthDAO authDAO = new SQLAuthDAO();
 
             AuthData userAuthData = authDAO.getAuth(authToken);
             if (userAuthData == null) {
@@ -29,7 +27,7 @@ public class GameService {
                 return createGameResponse;
             }
 
-            GameDAO gameDAO = MemoryGameDAO.getInstance();
+            GameDAO gameDAO = new SQLGameDAO();
             int gameID = gameDAO.createGame(gameName);
             createGameResponse = new CreateGameResponse(gameID, null);
         } catch (DataAccessException ex) {
@@ -43,14 +41,14 @@ public class GameService {
         ListGamesResponse listGamesResponse = null;
 
         try {
-            AuthDAO authDAO = MemoryAuthDAO.getInstance();
+            AuthDAO authDAO = new SQLAuthDAO();
             AuthData userAuthData = authDAO.getAuth(authToken);
             if (userAuthData == null) {
                 listGamesResponse = new ListGamesResponse(null, "Error: unauthorized");
                 return listGamesResponse;
             }
 
-            GameDAO gameDAO = MemoryGameDAO.getInstance();
+            GameDAO gameDAO = new SQLGameDAO();
             ArrayList<GameData> games = gameDAO.listGames();
             listGamesResponse = new ListGamesResponse(games, null);
         } catch (DataAccessException ex) {
@@ -68,14 +66,14 @@ public class GameService {
         }
 
         try {
-            AuthDAO authDAO = MemoryAuthDAO.getInstance();
+            AuthDAO authDAO = new SQLAuthDAO();
             AuthData userAuthData = authDAO.getAuth(authToken);
             if (userAuthData == null) {
                 errorResponse = new ErrorResponse("Error: unauthorized");
                 return errorResponse;
             }
 
-            GameDAO gameDAO = MemoryGameDAO.getInstance();
+            GameDAO gameDAO = new SQLGameDAO();
             GameData game = gameDAO.getGame(gameID);
             if (game == null) {
                 errorResponse = new ErrorResponse("Error: bad request");
