@@ -40,9 +40,23 @@ public class UserDaoTests {
     }
 
     @Test
-    public void getUserTest() {
+    public void getUserCorrectly() throws DataAccessException {
+        Assertions.assertDoesNotThrow(() -> userDAO.createUser("Ty", "ty123", "ty@gmail.com"));
+        UserData user = userDAO.getUser("Ty");
 
+        Assertions.assertNotNull(user);
+        Assertions.assertEquals("Ty", user.username());
+        Assertions.assertEquals("ty123", user.password());
+        Assertions.assertEquals("ty@gmail.com", user.email());
     }
+
+    @Test
+    public void getNonExistentUser() throws DataAccessException {
+        UserData user = userDAO.getUser("Brandon");
+
+        Assertions.assertNull(user);
+    }
+
 
     @Test
     public void clearTest( ) {
