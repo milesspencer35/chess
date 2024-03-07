@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 
 public class SQLUserDAO extends DAO implements UserDAO{
     public SQLUserDAO() throws DataAccessException {
@@ -74,10 +75,13 @@ public class SQLUserDAO extends DAO implements UserDAO{
 
     @Override
     public UserData verifyUser(String username, String password) throws DataAccessException {
+        UserData user = getUser(username);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-
-//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-//        return encoder.matches(providedClearTextPassword, hashedPassword);
-        return null;
+        if (user != null && encoder.matches(password, user.password())) {
+            return user;
+        } else {
+            return null;
+        }
     }
 }

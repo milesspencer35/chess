@@ -38,7 +38,7 @@ public class UserService {
     public LoginResponse login(UserData user) {
         LoginResponse loginResponse = null;
         try {
-            UserDAO userDAO = MemoryUserDAO.getInstance();
+            UserDAO userDAO = new SQLUserDAO();
             AuthDAO authDAO = MemoryAuthDAO.getInstance();
             UserData verifiedUser = userDAO.verifyUser(user.username(), user.password());
             if (verifiedUser == null) {
@@ -53,6 +53,7 @@ public class UserService {
         }
         return loginResponse;
     }
+
     public ErrorResponse logout(String authToken) {
         try {
             AuthDAO authDAO = MemoryAuthDAO.getInstance();
