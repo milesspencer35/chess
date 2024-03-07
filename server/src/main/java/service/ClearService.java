@@ -12,7 +12,7 @@ public class ClearService {
             userDao.clear();
             AuthDAO authDao = new SQLAuthDAO();
             authDao.clear();
-            GameDAO gameDao = MemoryGameDAO.getInstance();
+            GameDAO gameDao = new SQLGameDAO();
             gameDao.clear();
         } catch (DataAccessException ex) {
             System.out.println(ex.getMessage());

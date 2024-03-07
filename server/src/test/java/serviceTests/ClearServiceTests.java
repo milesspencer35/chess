@@ -18,6 +18,11 @@ public class ClearServiceTests {
     private UserService userService = new UserService();
     private GameService gameService = new GameService();
 
+    @BeforeEach
+    public void setup() {
+        clearService.clearApplication();
+    }
+
     @Test
     public void testClearApplication() {
 
