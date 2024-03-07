@@ -18,11 +18,11 @@ public class UserService {
         }
 
         try {
-            UserDAO userDao = MemoryUserDAO.getInstance();
+            UserDAO userDao = new SQLUserDAO();
             AuthDAO authDAO = MemoryAuthDAO.getInstance();
             UserData preExistingUser = userDao.getUser(user.username());
             if (preExistingUser == null) {
-                userDao.createUser(user.username(), user.password(), user.password());
+                userDao.createUser(user.username(), user.password(), user.email());
                 AuthData newAuth = authDAO.createAuth(user.username());
                 newResponse = new RegisterResponse(newAuth.authToken(), newAuth.username(), null);
             } else {
