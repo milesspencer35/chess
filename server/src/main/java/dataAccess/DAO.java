@@ -33,7 +33,7 @@ public class DAO {
             CREATE TABLE IF NOT EXISTS  auth (
               `username` varchar(256) NOT NULL,
               `authToken` varchar(256) NOT NULL,
-              PRIMARY KEY (`username`)
+              PRIMARY KEY (`authToken`)
             )
             """,
             """

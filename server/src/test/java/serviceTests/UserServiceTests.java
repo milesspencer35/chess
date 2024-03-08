@@ -59,7 +59,6 @@ public class UserServiceTests {
     public void UserIsLoggedIn() {
         UserData user = new UserData("William", "Will34", "will@gmail.com");
         RegisterResponse registerResponse = UserService.register(user);
-        UserService.logout(registerResponse.authToken());
 
         LoginResponse loginResponse = UserService.login(user);
 
@@ -95,7 +94,6 @@ public class UserServiceTests {
     public void SuccessfulLogout() {
         UserData user = new UserData("Peter", "pete123", "peter@gmail.com");
         RegisterResponse registerResponse = UserService.register(user);
-        UserService.logout(registerResponse.authToken());
         LoginResponse loginResponse = UserService.login(user);
 
         ErrorResponse errorResponse = UserService.logout(loginResponse.authToken());

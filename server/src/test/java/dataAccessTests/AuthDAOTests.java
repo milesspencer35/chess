@@ -33,13 +33,6 @@ public class AuthDAOTests {
     }
 
     @Test
-    public void createAuthForUserThatAlreadyHasAuth() throws DataAccessException {
-        authDAO.createAuth("Aaron");
-
-        Assertions.assertThrows(DataAccessException.class, () -> authDAO.createAuth("Aaron"));
-    }
-
-    @Test
     public void getAuthCorrectly() throws DataAccessException {
         AuthData authData = authDAO.createAuth("Harvey");
 
