@@ -1,5 +1,8 @@
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
@@ -11,15 +14,22 @@ public class DrawChessBoard {
         drawBoard();
     }
 
-    private static void drawBoard() {
+    public static void drawBoard(ChessGame game) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         out.print(ERASE_SCREEN);
 
-        //drawTopBottomHeader(out);
+        drawLetterCoordinates(out, game.getTeamTurn());
     }
 
-    private static void drawTopBottomHeader(PrintStream out) {
+    private static void drawLetterCoordinates(PrintStream out, ChessGame.TeamColor color) {
+        String[] whiteLetterCoordinates = {"a", "b", "c", "d", "e", "f", "g", "h"};
+        String[] blackLetterCoordinates = {"h", "g", "f", "e", "d", "c", "b", "a"};
+
+        String[] letterCoordinates =
+                color == ChessGame.TeamColor.WHITE ? whiteLetterCoordinates : blackLetterCoordinates;
+
+        // start here
 
     }
 
