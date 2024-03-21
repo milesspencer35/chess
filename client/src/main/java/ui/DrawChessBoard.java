@@ -2,9 +2,12 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPosition;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 import static ui.EscapeSequences.*;
 
@@ -18,6 +21,7 @@ public class DrawChessBoard {
         board.resetBoard();
         ChessGame game = new ChessGame();
         game.setBoard(board);
+        game.setTeamTurn(ChessGame.TeamColor.BLACK);
 
         drawBoard(game);
     }
@@ -26,17 +30,39 @@ public class DrawChessBoard {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         out.print(ERASE_SCREEN);
+        ChessBoard board = game.getBoard();
+
+        if (game.getTeamTurn() == ChessGame.TeamColor.BLACK) {
+            board = reversedBoard(game.getBoard());  // TODO: make it flip vertically
+        }
 
         drawLetterCoordinates(out, game.getTeamTurn());
-        drawPlaySpace(out, game.getBoard());
+        drawPlaySpace(out, board);
         drawLetterCoordinates(out, game.getTeamTurn());
     }
+
+    private static ChessBoard reversedBoard(ChessBoard board) { // TODO: this need to reverse top to bottom
+        ChessBoard reverseBoard = new ChessBoard();
+        for (int row = 1; row <= 8; row++) {
+            ArrayList<ChessPiece> pieces = new ArrayList<>();
+            for (int col = 1; col <= 8; col++) {
+                pieces.add(board.getPiece(new ChessPosition(row, col)));
+            }
+            int piecePrevColumn = 0;
+            for (int col = 8; col >= 1; col--) {
+                reverseBoard.addPiece(new ChessPosition(row, col), pieces.get(piecePrevColumn));
+                piecePrevColumn++;
+            }
+        }
+        return reverseBoard;
+    }
+
 
     private static void drawLetterCoordinates(PrintStream out, ChessGame.TeamColor color) {
         String[] whiteLetterCoordinates = {"a", "b", "c", "d", "e", "f", "g", "h"};
         String[] blackLetterCoordinates = {"h", "g", "f", "e", "d", "c", "b", "a"};
         String[] letterCoordinates =
-                color == ChessGame.TeamColor.WHITE ? whiteLetterCoordinates : blackLetterCoordinates;
+                color == ChessGame.TeamColor.BLACK ? blackLetterCoordinates : whiteLetterCoordinates;
 
         setBackgroundGray(out);
         drawEMPTY(out);
@@ -59,8 +85,7 @@ public class DrawChessBoard {
         for (int boardRow = 1; boardRow <= BOARD_HEIGHT; boardRow++) {
             drawNumberCoordinate(out, boardRow);
 
-
-
+            drawPlayRow(out, board, boardRow);
 
             drawNumberCoordinate(out, boardRow);
             resetBGColor(out);
@@ -75,7 +100,95 @@ public class DrawChessBoard {
         out.print(" ");
     }
 
+    private static void drawPlayRow(PrintStream out, ChessBoard board, int row) {
 
+        for (int col = 1; col <= 8; col++) {
+            ChessPiece piece = getPiece(board, col, row);
+
+            if (row % 2 == 1) {
+                if (col % 2 == 1) {
+                    drawWhiteSquare(out, getPieceString(piece), getPieceColor(piece));
+                } else {
+                    drawBlackSquare(out, getPieceString(piece), getPieceColor(piece));
+                }
+            } else {
+                if (col % 2 == 1) {
+                    drawBlackSquare(out, getPieceString(piece), getPieceColor(piece));
+                } else {
+                    drawWhiteSquare(out, getPieceString(piece), getPieceColor(piece));
+                }
+            }
+        }
+    }
+
+    private static String getPieceString(ChessPiece piece) {
+        if (piece == null) {
+            return " ";
+        }
+
+        switch (piece.getPieceType()) {
+            case KING:
+                return "K";
+            case QUEEN:
+                return "Q";
+            case BISHOP:
+                return "B";
+            case KNIGHT:
+                return "N";
+            case ROOK:
+                return "R";
+            default:
+                return "P";
+        }
+    }
+
+    private static ChessGame.TeamColor getPieceColor(ChessPiece piece) {
+        if (piece == null) {
+            return ChessGame.TeamColor.WHITE;
+        }
+
+        switch(piece.getTeamColor()) {
+            case WHITE:
+                return ChessGame.TeamColor.WHITE;
+            default:
+                return ChessGame.TeamColor.BLACK;
+        }
+    }
+
+    private static void drawSquare(PrintStream out, String piece, ChessGame.TeamColor color) {
+        if (color == ChessGame.TeamColor.WHITE) {
+            drawWhiteSquare(out, piece, color);
+        }
+    }
+
+    private static void drawWhiteSquare(PrintStream out, String piece, ChessGame.TeamColor color) {
+        setPieceColor(out, color);
+        setBackgroundWhite(out);
+        out.print(" ");
+        out.print(piece);
+        out.print(" ");
+    }
+
+    private static void drawBlackSquare(PrintStream out, String piece, ChessGame.TeamColor color) {
+        setPieceColor(out, color);
+        setBackgroundBlack(out);
+        out.print(" ");
+        out.print(piece);
+        out.print(" ");
+    }
+
+    private static void setPieceColor(PrintStream out, ChessGame.TeamColor color) {
+        if (color == ChessGame.TeamColor.WHITE) {
+            setTextColorBlue(out);
+        } else {
+            setTextColorRed(out);
+        }
+    }
+
+    private static ChessPiece getPiece(ChessBoard board, int col, int row){
+        ChessPosition pos = new ChessPosition(row, col);
+        return board.getPiece(pos);
+    }
 
 
     private static void drawEMPTY(PrintStream out) {
@@ -85,6 +198,22 @@ public class DrawChessBoard {
     private static void setBackgroundGray(PrintStream out) {
         out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(SET_TEXT_COLOR_BLACK);
+    }
+
+    private static void setBackgroundWhite(PrintStream out) {
+        out.print(SET_BG_COLOR_WHITE);
+    }
+
+    private static void setBackgroundBlack(PrintStream out) {
+        out.print(SET_BG_COLOR_BLACK);
+    }
+
+    private static void setTextColorBlue(PrintStream out) {
+        out.print(SET_TEXT_COLOR_BLUE);
+    }
+
+    private static void setTextColorRed(PrintStream out) {
+        out.print(SET_TEXT_COLOR_RED);
     }
 
     private static void resetBGColor(PrintStream out) {
