@@ -21,8 +21,13 @@ public class DrawChessBoard {
         board.resetBoard();
         ChessGame game = new ChessGame();
         game.setBoard(board);
-        game.setTeamTurn(ChessGame.TeamColor.BLACK);
+        game.setTeamTurn(ChessGame.TeamColor.WHITE);
 
+        System.out.println("White Board");
+        drawBoard(game);
+
+        game.setTeamTurn(ChessGame.TeamColor.BLACK);
+        System.out.println("Black Board");
         drawBoard(game);
     }
 
@@ -33,15 +38,16 @@ public class DrawChessBoard {
         ChessBoard board = game.getBoard();
 
         if (game.getTeamTurn() == ChessGame.TeamColor.BLACK) {
-            board = reversedBoard(game.getBoard());  // TODO: make it flip vertically
+            board = reversedBoard(game.getBoard());
         }
 
         drawLetterCoordinates(out, game.getTeamTurn());
-        drawPlaySpace(out, board);
+        drawPlaySpace(out, board, game.getTeamTurn());
         drawLetterCoordinates(out, game.getTeamTurn());
+        out.println();
     }
 
-    private static ChessBoard reversedBoard(ChessBoard board) { // TODO: this need to reverse top to bottom
+    private static ChessBoard reversedBoard(ChessBoard board) {
         ChessBoard reverseBoard = new ChessBoard();
         for (int row = 1; row <= 8; row++) {
             ArrayList<ChessPiece> pieces = new ArrayList<>();
@@ -81,15 +87,26 @@ public class DrawChessBoard {
         out.print(" ");
     }
 
-    private static void drawPlaySpace(PrintStream out, ChessBoard board) {
-        for (int boardRow = 1; boardRow <= BOARD_HEIGHT; boardRow++) {
-            drawNumberCoordinate(out, boardRow);
+    private static void drawPlaySpace(PrintStream out, ChessBoard board, ChessGame.TeamColor color) {
+        if (color == ChessGame.TeamColor.WHITE) {
+            for (int boardRow = 8; boardRow >= 1; boardRow--) {
+                drawNumberCoordinate(out, boardRow);
 
-            drawPlayRow(out, board, boardRow);
+                drawPlayRow(out, board, boardRow);
+                drawNumberCoordinate(out, boardRow);
+                resetBGColor(out);
+                out.println();
+            }
+        } else {
+            for (int boardRow = 1; boardRow <= BOARD_HEIGHT; boardRow++) {
+                drawNumberCoordinate(out, boardRow);
 
-            drawNumberCoordinate(out, boardRow);
-            resetBGColor(out);
-            out.println();
+                drawPlayRow(out, board, boardRow);
+
+                drawNumberCoordinate(out, boardRow);
+                resetBGColor(out);
+                out.println();
+            }
         }
     }
 
