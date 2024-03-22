@@ -2,13 +2,13 @@ package client;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import exception.ResponseException;
 import model.*;
 import request.CreateGameRequest;
 import request.JoinRequest;
 import response.CreateGameResponse;
 import response.ListGamesResponse;
 
-import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;

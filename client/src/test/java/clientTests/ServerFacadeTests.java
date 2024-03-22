@@ -1,7 +1,7 @@
 package clientTests;
 
 import chess.ChessGame;
-import client.ResponseException;
+import exception.ResponseException;
 import client.ServerFacade;
 import org.junit.jupiter.api.*;
 import response.ListGamesResponse;
