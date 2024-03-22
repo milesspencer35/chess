@@ -2,8 +2,6 @@ package server;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.internal.LinkedTreeMap;
-import model.GameData;
 import model.UserData;
 import request.CreateGameRequest;
 import request.JoinRequest;
@@ -12,8 +10,6 @@ import service.ClearService;
 import service.GameService;
 import service.UserService;
 import spark.*;
-
-import java.util.LinkedList;
 
 public class Server {
     private final ClearService clearService = new ClearService();
