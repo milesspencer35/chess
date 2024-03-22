@@ -21,6 +21,11 @@ public class ServerFacade {
         serverUrl = url;
     }
 
+    public void clearApp() throws ResponseException {
+        var path = "/db";
+        this.makeRequest("DELETE", path, null, null);
+    }
+
     public AuthData register(String username, String password, String email) throws ResponseException{
         UserData user = new UserData(username, password, email);
         var path = "/user";
