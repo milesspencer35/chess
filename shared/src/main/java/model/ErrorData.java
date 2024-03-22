@@ -1,2 +1,4 @@
-package model;public class ErrorData {
+package model;
+
+public record ErrorData(String message) {
 }
