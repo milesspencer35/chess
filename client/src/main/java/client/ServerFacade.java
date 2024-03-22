@@ -32,6 +32,17 @@ public class ServerFacade {
         return this.makeRequest("POST", path, user, AuthData.class);
     }
 
+    public AuthData login(String username, String password) throws ResponseException {
+        UserData user = new UserData(username, password, "");
+        var path = "/session";
+        return this.makeRequest("POST", path, user, AuthData.class);
+    }
+
+    public void logout(String authToken) throws ResponseException {
+        var path = "/session";
+        this.makeRequest("DELETE", path, authToken, null);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
             // Sets url
@@ -41,6 +52,10 @@ public class ServerFacade {
             // sets the type of request (GET, POST,...)
             http.setRequestMethod(method);
             http.setDoOutput(true);
+
+            if (request instanceof String) {
+                setAuthToken(request.toString(), http);
+            }
 
             // adds the body to http request
             writeBody(request, http);
@@ -63,6 +78,10 @@ public class ServerFacade {
                 reqBody.write(reqData.getBytes());
             }
         }
+    }
+
+    private static void setAuthToken(String authToken, HttpURLConnection http) {
+        http.addRequestProperty("authorization", authToken);
     }
 
     private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
