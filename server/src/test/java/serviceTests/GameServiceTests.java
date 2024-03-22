@@ -12,10 +12,8 @@ import response.RegisterResponse;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
-import spark.utils.Assert;
 
 import java.util.ArrayList;
-import java.util.stream.Stream;
 
 public class GameServiceTests {
     GameService gameService = new GameService();

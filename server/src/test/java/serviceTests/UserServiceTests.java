@@ -10,8 +10,6 @@ import response.RegisterResponse;
 import service.ClearService;
 import service.UserService;
 
-import java.lang.reflect.Field;
-
 public class UserServiceTests {
     private UserService UserService = new UserService();
     private ClearService clearService = new ClearService();
