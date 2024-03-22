@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URI;
+import java.util.ArrayList;
 
 public class ServerFacade {
 
@@ -60,9 +61,10 @@ public class ServerFacade {
         this.makeRequest("PUT", path, joinRequest, null, authToken);
     }
 
-    public ListGamesResponse listGames(String authToken) throws ResponseException {
+    public ArrayList<GameData> listGames(String authToken) throws ResponseException {
         var path = "/game";
-        return this.makeRequest("GET", path, null, ListGamesResponse.class, authToken);
+        ListGamesResponse resp = this.makeRequest("GET", path, null, ListGamesResponse.class, authToken);
+        return resp.games();
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
