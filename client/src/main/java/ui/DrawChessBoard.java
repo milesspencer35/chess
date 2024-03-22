@@ -235,6 +235,5 @@ public class DrawChessBoard {
 
     private static void resetBGColor(PrintStream out) {
         out.print("\u001B[0m");
-
     }
 }
