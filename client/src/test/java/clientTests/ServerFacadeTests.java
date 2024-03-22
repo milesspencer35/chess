@@ -1,7 +1,9 @@
 package clientTests;
 
+import client.ResponseException;
 import client.ServerFacade;
 import org.junit.jupiter.api.*;
+import response.RegisterResponse;
 import server.Server;
 
 
@@ -24,10 +26,25 @@ public class ServerFacadeTests {
         server.stop();
     }
 
+    @BeforeEach
+    public void setup() throws Exception {
+        facade.clearApp();
+    }
+
+
     @Test
-    void register() throws Exception {
-        var authData = facade.register("player2", "password", "p1@email.com");
+    void registerCorrectly() throws Exception {
+        var authData = facade.register("player1", "password", "p1@email.com");
+        Assertions.assertEquals(authData.username(), "player1");
         Assertions.assertTrue(authData.authToken().length() > 10);
     }
 
+    @Test
+    void registerUserTwice() throws ResponseException {
+        var authData = facade.register("Miles", "password", "miles@gmail.com");
+        Assertions.assertEquals(authData.username(), "Miles");
+        Assertions.assertTrue(authData.authToken().length() > 10);
+
+        Assertions.assertThrows(ResponseException.class, () -> facade.register("Miles", "password", "miles@gmail.com"));
+    }
 }
