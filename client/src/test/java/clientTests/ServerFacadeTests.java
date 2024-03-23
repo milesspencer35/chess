@@ -3,9 +3,12 @@ package clientTests;
 import chess.ChessGame;
 import exception.ResponseException;
 import client.ServerFacade;
+import model.GameData;
 import org.junit.jupiter.api.*;
 import response.ListGamesResponse;
 import server.Server;
+
+import java.util.ArrayList;
 
 
 public class ServerFacadeTests {
@@ -117,15 +120,15 @@ public class ServerFacadeTests {
         facade.createGame("M v N", authData.authToken());
         facade.createGame("Y v D", authData.authToken());
 
-        ListGamesResponse games = facade.listGames(authData.authToken());
-        Assertions.assertEquals(2, games.games().size());
+        ArrayList<GameData> games = facade.listGames(authData.authToken());
+        Assertions.assertEquals(2, games.size());
     }
 
     @Test
     void listGamesWhenThereArentAny() throws ResponseException {
         var authData = facade.register("Shaggy", "password", "shaggy@gmail.com");
 
-        ListGamesResponse games = facade.listGames(authData.authToken());
-        Assertions.assertEquals(0, games.games().size());
+        ArrayList<GameData> games = facade.listGames(authData.authToken());
+        Assertions.assertEquals(0, games.size());
     }
 }

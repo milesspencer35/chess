@@ -1,17 +1,20 @@
 package client;
 
+import chess.ChessGame;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
+import ui.DrawChessBoard;
 
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
+
 import static ui.EscapeSequences.*;
 
 public class ChessClient {
     private final ServerFacade server;
     private final String serverUrl;
-    String authToken = null;
+    private Map<Integer, GameData> listOfGames = new HashMap<>();
+    private String authToken = null;
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -24,7 +27,7 @@ public class ChessClient {
 
         Scanner scanner = new Scanner(System.in);
         String result = "";
-        while (!result.equals("quit")) {
+        while (true) {
             printPrompt();
             String line = scanner.nextLine();
 
@@ -34,14 +37,12 @@ public class ChessClient {
                 evalLoggedIn(line, scanner);
             }
         }
-        System.out.println();
     }
 
     public void evalNotLoggedIn(String input, Scanner scanner) {
         try {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "3";
-//            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             switch (cmd) {
                 case "1" -> {
                     register(scanner);
@@ -87,13 +88,23 @@ public class ChessClient {
             System.out.print(
                     """
                     
-                        Enter '1' to register an account.
-                        Enter '2' to login to your account.
-                        Enter '3' for to view this help menu.
-                        Enter '4' to quit chess application.
+                        Enter (1) to register an account.
+                        Enter (2) to login to your account.
+                        Enter (3) for to view this help menu.
+                        Enter (4) to quit the chess application.
                     """);
         } else {
-            System.out.print("help");
+            System.out.print(
+                    """
+                      
+                    Enter (1) to create a new game.
+                    Enter (2) to list the current games.
+                    Enter (3) to join a game.
+                    Enter (4) to enter a game as an observer.
+                    Enter (5) to logout.
+                    Enter (6) to display this help menu.
+                    Enter (7) to quit the chess application.
+                    """);
         }
     }
 
@@ -102,20 +113,19 @@ public class ChessClient {
         System.exit(0);
     }
 
-    public void evalLoggedIn(String input, Scanner scanner) {
+    private void evalLoggedIn(String input, Scanner scanner) {
         try {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "6";
-//            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             switch (cmd) {
-                case "1" -> {
-                    createGame(scanner);
+                case "1" -> createGame(scanner);
+                case "2" -> listGames();
+                case "3" -> joinGame(scanner);
+                case "4" -> observe(scanner);
+                case "5" -> {
+                    logout();
                     System.out.print(menuStart());
                 }
-                case "2" -> listGames();
-//                case "3" -> joinGame;
-//                case "4" -> observe;
-//                case "5" -> logout();
                 case "7" -> quit();
                 default -> help();
             };
@@ -125,20 +135,74 @@ public class ChessClient {
         }
     }
 
-    public void createGame(Scanner scanner) throws ResponseException {
+    private void createGame(Scanner scanner) throws ResponseException {
         System.out.println("Name the game: ");
         String gameName = scanner.nextLine();
 
         server.createGame(gameName, this.authToken);
     }
 
-    public void listGames() throws ResponseException {
+    private void listGames() throws ResponseException {
         ArrayList<GameData> gamesList = server.listGames(this.authToken);
+        listOfGames.clear();
         for (int i = 0; i < gamesList.size(); i++) {
-            System.out.println( (i + 1) + ". game name: " + gamesList.get(i).gameName()
-                    + ", white player: " + gamesList.get(i).whiteUsername()
-                    + ", black player: " + gamesList.get(i).blackUsername());
+            listOfGames.put((i+1), gamesList.get(i));
         }
+
+        for (Map.Entry<Integer, GameData> set : listOfGames.entrySet() ) {
+            System.out.println("\t" + set.getKey() + ". game name: " + set.getValue().gameName()
+                    + ", white player: " + set.getValue().whiteUsername()
+                    + ", black player: " + set.getValue().blackUsername());
+        }
+    }
+
+    private void joinGame(Scanner scanner) throws ResponseException {
+        int gameID;
+        try {
+            System.out.println("Enter the id for the game you want to join.");
+            gameID = Integer.parseInt(scanner.nextLine());
+        } catch (Exception ex) {
+            throw new ResponseException(500, "Please enter a valid game id or view the list of games to refresh games");
+        }
+        System.out.println("Would you like to be the (1) white player or (2) black player. Enter number.");
+        String colorNum = scanner.nextLine();
+        ChessGame.TeamColor color = null;
+        if (colorNum.equals("1")) {
+            color = ChessGame.TeamColor.WHITE;
+        } else {
+            color = ChessGame.TeamColor.BLACK;
+        }
+
+        GameData selectedGame = listOfGames.get(gameID);
+        if (selectedGame == null) {
+            throw new ResponseException(500, "Please enter a valid game id or view the list of games to refresh games");
+        }
+
+        server.joinGame(color, selectedGame.gameID(), authToken);
+        DrawChessBoard.drawBoard(selectedGame.game());
+    }
+
+    private void observe(Scanner scanner) throws ResponseException {
+        int gameID;
+        try {
+            System.out.println("Enter the id for the game you want to observe.");
+            gameID = Integer.parseInt(scanner.nextLine());
+        } catch (Exception ex) {
+            throw new ResponseException(500, "Please enter a valid game id or view the list of games to refresh games");
+        }
+
+        GameData selectedGame = listOfGames.get(gameID);
+        if (selectedGame == null) {
+            throw new ResponseException(500, "Please enter a valid game id or view the list of games to refresh games");
+        }
+
+        server.joinGame(null, selectedGame.gameID(), authToken);
+        DrawChessBoard.drawBoard(selectedGame.game());
+    }
+
+    private void logout() throws ResponseException {
+        server.logout(this.authToken);
+        this.authToken = null;
     }
 
     private void printPrompt() {
