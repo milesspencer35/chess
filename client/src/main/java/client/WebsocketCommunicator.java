@@ -1,7 +1,10 @@
 package client;
+import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import webSocketMessages.serverMessages.ServerMessage;
+import webSocketMessages.userCommands.JoinPlayerMessage;
+import webSocketMessages.userCommands.UserGameCommand;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -9,8 +12,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class WebsocketCommunicator extends Endpoint {
-    private Session session;
-    private ServerMessageObserver serverMessageObserver;
+    Session session;
+    ServerMessageObserver serverMessageObserver;
 
     public WebsocketCommunicator(String url, ServerMessageObserver serverMessageObserver) throws ResponseException {
         try {
@@ -39,13 +42,13 @@ public class WebsocketCommunicator extends Endpoint {
     }
 
     // TODO: implement something like this for each of the UserGameCommands
-//    public void enterPetShop(String visitorName) throws ResponseException {
-//        try {
-//            var action = new Action(Action.Type.ENTER, visitorName);
-//            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-//        } catch (IOException ex) {
-//            throw new ResponseException(500, ex.getMessage());
-//        }
-//    }
+    public void joinGame(String authToken, Integer gameID, ChessGame.TeamColor playerColor) throws ResponseException {
+        try {
+            var msg = new JoinPlayerMessage(authToken, gameID, playerColor);
+            this.session.getBasicRemote().sendText(new Gson().toJson(msg));
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
 
 }

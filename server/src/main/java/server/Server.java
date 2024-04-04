@@ -10,6 +10,7 @@ import service.ClearService;
 import service.GameService;
 import service.UserService;
 import spark.*;
+import server.websocket.WebSocketHandler;
 
 public class Server {
     private final ClearService clearService = new ClearService();
@@ -21,6 +22,8 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
+        Spark.webSocket("/connect", new WebSocketHandler());
 
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", this::clearApp);
