@@ -5,19 +5,21 @@ import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import ui.DrawChessBoard;
+import webSocketMessages.serverMessages.ServerMessage;
 
 import java.util.*;
 
 import static ui.EscapeSequences.*;
 
-public class ChessClient {
+public class ChessClient implements ServerMessageObserver{
     private final ServerFacade server;
     private final String serverUrl;
     private Map<Integer, GameData> listOfGames = new HashMap<>();
     private String authToken = null;
+    private WebsocketCommunicator ws;
 
     public ChessClient(String serverUrl) {
-        server = new ServerFacade(serverUrl);
+        server = new ServerFacade(serverUrl, this);
         this.serverUrl = serverUrl;
     }
 
@@ -230,4 +232,14 @@ public class ChessClient {
                     7. quit
                 """;
     }
+
+    @Override
+    public void notify(ServerMessage message) {
+//        switch (message.getServerMessageType()) {
+//            case NOTIFICATION -> displayNotification(((NotificationMessage) message).getMessage());
+//            case ERROR -> displayError(((ErrorMessage) message).getErrorMessage());
+//            case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame());
+//        }
+    }
+
 }
