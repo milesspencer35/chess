@@ -6,6 +6,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import webSocketMessages.userCommands.JoinPlayerMessage;
+import webSocketMessages.userCommands.LeaveGameMessage;
 import webSocketMessages.userCommands.ObserveGameMessage;
 import webSocketMessages.userCommands.UserGameCommand;
 
@@ -41,6 +42,7 @@ public class WebSocketHandler {
     }
 
     private void leave(String message) {
+        LeaveGameMessage command = new Gson().fromJson(message, LeaveGameMessage.class);
 
     }
 
