@@ -1,9 +1,11 @@
 package client;
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.JoinPlayerMessage;
+import webSocketMessages.userCommands.LeaveGameMessage;
 import webSocketMessages.userCommands.ObserveGameMessage;
 import webSocketMessages.userCommands.UserGameCommand;
 
@@ -59,6 +61,23 @@ public class WebsocketCommunicator extends Endpoint {
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
+    }
+
+    public void makeMove(String authToken, Integer gameID, ChessMove move) {
+
+    }
+
+    public void leave(String authToken, Integer gameID) throws ResponseException {
+        try {
+            var msg = new LeaveGameMessage(authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(msg));
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    public void resign(String authToken, Integer gameID) {
+
     }
 
 }

@@ -18,6 +18,8 @@ public class ChessClient implements ServerMessageObserver{
     private String authToken = null;
     private WebsocketCommunicator ws;
     private boolean inGame = false;
+    private ChessGame currentGame = null;
+    private Integer currentGameID = null;
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl, this);
@@ -194,6 +196,7 @@ public class ChessClient implements ServerMessageObserver{
         ws.joinGame(authToken, selectedGame.gameID(), color);
         DrawChessBoard.drawBoard(selectedGame.game(), color);
         inGame = true;
+        currentGameID = selectedGame.gameID();
     }
 
     private void observe(Scanner scanner) throws ResponseException {
@@ -215,6 +218,7 @@ public class ChessClient implements ServerMessageObserver{
         ws.observeGame(authToken, selectedGame.gameID());
         DrawChessBoard.drawBoard(selectedGame.game(), ChessGame.TeamColor.WHITE);
         inGame = true;
+        currentGameID = selectedGame.gameID();
     }
 
     private void logout() throws ResponseException {
@@ -259,22 +263,52 @@ public class ChessClient implements ServerMessageObserver{
     }
 
     private void evalInGame(String input, Scanner scanner) {
-//        try {
-//            var tokens = input.toLowerCase().split(" ");
-//            var cmd = (tokens.length > 0) ? tokens[0] : "6";
-//            switch (cmd) {
-//                case "1" -> makeMove(scanner);
-//                case "2" -> highlightLegalMoves(scanner);
-//                case "3" -> redrawBoard(scanner);
-//                case "4" -> resign(scanner);
-//                case "5" -> leave(scanner);
-//                default -> help();
-//            };
-//        } catch (ResponseException ex) {
-//            System.out.println(SET_TEXT_COLOR_RED + ex.getMessage());
-//            System.out.print(SET_TEXT_COLOR_WHITE + menuStart());
-//        }
+        try {
+            var tokens = input.toLowerCase().split(" ");
+            var cmd = (tokens.length > 0) ? tokens[0] : "6";
+            switch (cmd) {
+                case "1" -> makeMove(scanner);
+                case "2" -> highlightLegalMoves(scanner);
+                case "3" -> redrawBoard(scanner);
+                case "4" -> resign(scanner);
+                case "5" -> {
+                    leave();
+                    System.out.print(menuStart());
+                }
+                default -> help();
+            };
+        } catch (ResponseException ex) {
+            System.out.println(SET_TEXT_COLOR_RED + ex.getMessage());
+            System.out.print(SET_TEXT_COLOR_WHITE + menuStart());
+        }
     }
+
+    private void makeMove(Scanner scanner) throws ResponseException {
+
+    }
+
+    private void highlightLegalMoves(Scanner scanner) {
+
+    }
+
+    private void redrawBoard(Scanner scanner) {
+
+    }
+
+    private void resign(Scanner scanner) {
+
+    }
+
+    private void leave() throws ResponseException {
+        try {
+            ws.leave(authToken, currentGameID);
+        } catch (ResponseException ex) {
+            throw new ResponseException(500, "Error trying to leave game");
+        }
+
+        inGame = false;
+    }
+
 
     @Override
     public void notify(ServerMessage message) {
