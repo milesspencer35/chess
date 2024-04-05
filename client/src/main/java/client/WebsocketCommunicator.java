@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.JoinPlayerMessage;
+import webSocketMessages.userCommands.ObserveGameMessage;
 import webSocketMessages.userCommands.UserGameCommand;
 
 import javax.websocket.*;
@@ -45,6 +46,15 @@ public class WebsocketCommunicator extends Endpoint {
     public void joinGame(String authToken, Integer gameID, ChessGame.TeamColor playerColor) throws ResponseException {
         try {
             var msg = new JoinPlayerMessage(authToken, gameID, playerColor);
+            this.session.getBasicRemote().sendText(new Gson().toJson(msg));
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    public void observeGame(String authToken, Integer gameID) throws ResponseException {
+        try {
+            var msg = new ObserveGameMessage(authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(msg));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());

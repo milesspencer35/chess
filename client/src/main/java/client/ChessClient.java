@@ -201,6 +201,8 @@ public class ChessClient implements ServerMessageObserver{
         }
 
         server.joinGame(null, selectedGame.gameID(), authToken);
+        ws = new WebsocketCommunicator(serverUrl, this);
+        ws.observeGame(authToken, selectedGame.gameID());
         DrawChessBoard.drawBoard(selectedGame.game());
     }
 
