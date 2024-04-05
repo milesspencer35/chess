@@ -24,42 +24,26 @@ public class DrawChessBoard {
         game.setTeamTurn(ChessGame.TeamColor.WHITE);
 
         System.out.println("White Board");
-        drawBoard(game);
+        drawBoard(game, ChessGame.TeamColor.WHITE);
 
         game.setTeamTurn(ChessGame.TeamColor.BLACK);
         System.out.println("Black Board");
-        drawBoard(game);
+        drawBoard(game, ChessGame.TeamColor.BLACK);
     }
 
-    public static void drawBoard(ChessGame game) {
+    public static void drawBoard(ChessGame game, ChessGame.TeamColor playerColor) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         out.print(ERASE_SCREEN);
         ChessBoard board = game.getBoard();
 
-        // Hard code
-        board = new ChessBoard();
-        board.resetBoard();
-        // Hard code
-
-        if (game.getTeamTurn() == ChessGame.TeamColor.BLACK) {
+        if (playerColor == ChessGame.TeamColor.BLACK) {
             board = reversedBoard(game.getBoard());
         }
 
-//        drawLetterCoordinates(out, game.getTeamTurn());
-//        drawPlaySpace(out, board, game.getTeamTurn());
-//        drawLetterCoordinates(out, game.getTeamTurn());
-
-        // hard code
-        drawLetterCoordinates(out, ChessGame.TeamColor.WHITE);
-        drawPlaySpace(out, board, ChessGame.TeamColor.WHITE);
-        drawLetterCoordinates(out, ChessGame.TeamColor.WHITE);
-        out.println();
-
-        drawLetterCoordinates(out, ChessGame.TeamColor.BLACK);
-        drawPlaySpace(out, board, ChessGame.TeamColor.BLACK);
-        drawLetterCoordinates(out, ChessGame.TeamColor.BLACK);
-        // hard code
+        drawLetterCoordinates(out, playerColor);
+        drawPlaySpace(out, board, playerColor);
+        drawLetterCoordinates(out, playerColor);
 
         out.println();
     }
