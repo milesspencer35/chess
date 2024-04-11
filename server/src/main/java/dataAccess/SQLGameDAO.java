@@ -148,4 +148,30 @@ public class SQLGameDAO extends DAO implements GameDAO {
             throw new DataAccessException(ex.getMessage());
         }
     }
+
+    public void updateGame(Integer gameID, String whiteUsername, String blackUsername, ChessGame updatedGame) throws DataAccessException {
+        try {
+//            GameData game = getGame(gameID);
+
+            String sql = "update game " +
+                    "set whiteUsername = ?, blackUsername = ?, game = ? " +
+                    "where gameID = ?";
+
+            Connection connection = null;
+            try (Connection c = DatabaseManager.getConnection()) {
+                connection = c;
+                try(PreparedStatement stmt = connection.prepareStatement(sql)) {
+                    stmt.setString(1, whiteUsername);
+                    stmt.setString(2, blackUsername);
+                    stmt.setString(3, new Gson().toJson(updatedGame, ChessGame.class));
+                    stmt.setInt(4, gameID);
+                    stmt.executeUpdate();
+                }
+            } catch (SQLException ex) {
+                throw new DataAccessException(ex.getMessage());
+            }
+        } catch (Exception ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
+    }
 }
