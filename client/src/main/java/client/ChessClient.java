@@ -1,6 +1,8 @@
 package client;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -284,7 +286,15 @@ public class ChessClient implements ServerMessageObserver{
     }
 
     private void makeMove(Scanner scanner) throws ResponseException {
+        ChessPosition startPosition = new ChessPosition(1, 1);
+        ChessPosition endPosition = new ChessPosition(1, 2);
+        ChessMove move = new ChessMove(startPosition, endPosition, null);
 
+        try {
+            ws.makeMove(authToken, currentGameID, move);
+        } catch (ResponseException ex) {
+            throw new ResponseException(500, "Error trying to resign from game");
+        }
     }
 
     private void highlightLegalMoves(Scanner scanner) {
@@ -295,8 +305,12 @@ public class ChessClient implements ServerMessageObserver{
 
     }
 
-    private void resign(Scanner scanner) {
-
+    private void resign(Scanner scanner) throws ResponseException {
+        try {
+            ws.resign(authToken, currentGameID);
+        } catch (ResponseException ex) {
+            throw new ResponseException(500, "Error trying to resign from game");
+        }
     }
 
     private void leave() throws ResponseException {

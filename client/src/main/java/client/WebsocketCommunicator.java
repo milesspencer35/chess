@@ -4,10 +4,7 @@ import chess.ChessMove;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import webSocketMessages.serverMessages.ServerMessage;
-import webSocketMessages.userCommands.JoinPlayerMessage;
-import webSocketMessages.userCommands.LeaveGameMessage;
-import webSocketMessages.userCommands.ObserveGameMessage;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.userCommands.*;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -63,8 +60,13 @@ public class WebsocketCommunicator extends Endpoint {
         }
     }
 
-    public void makeMove(String authToken, Integer gameID, ChessMove move) {
-
+    public void makeMove(String authToken, Integer gameID, ChessMove move) throws ResponseException {
+        try {
+            var msg = new MakeMoveGameMessage(authToken, gameID, move);
+            this.session.getBasicRemote().sendText(new Gson().toJson(msg));
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
     }
 
     public void leave(String authToken, Integer gameID) throws ResponseException {
@@ -76,8 +78,13 @@ public class WebsocketCommunicator extends Endpoint {
         }
     }
 
-    public void resign(String authToken, Integer gameID) {
-
+    public void resign(String authToken, Integer gameID) throws ResponseException {
+        try {
+            var msg = new ResignGameMessage(authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(msg));
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
     }
 
 }
