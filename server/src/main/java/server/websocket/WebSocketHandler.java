@@ -50,13 +50,13 @@ public class WebSocketHandler {
             ServerMessage errorMessage = new ErrorMessage("Error: Bad authToken");
             connections.broadcastToRoot(command.getAuthString(), errorMessage);
             return;
+        } else if (gameData.whiteUsername() == null && gameData.blackUsername() == null) {
+            ServerMessage errorMessage = new ErrorMessage("Error: Game doesn't exist");
+            connections.broadcastToRoot(command.getAuthString(), errorMessage);
+            return;
         } else if (command.getPlayerColor() == ChessGame.TeamColor.WHITE && !gameData.whiteUsername().equals(authData.username())
                 || command.getPlayerColor() == ChessGame.TeamColor.BLACK && !gameData.blackUsername().equals(authData.username())) {
             ServerMessage errorMessage = new ErrorMessage("Error: Spot already taken");
-            connections.broadcastToRoot(command.getAuthString(), errorMessage);
-            return;
-        } else if (gameData.whiteUsername() == null && gameData.blackUsername() == null) {
-            ServerMessage errorMessage = new ErrorMessage("Error: Game doesn't exist");
             connections.broadcastToRoot(command.getAuthString(), errorMessage);
             return;
         }
@@ -101,11 +101,22 @@ public class WebSocketHandler {
 
     }
 
-    private void leave(String message) {
+    private void leave(String message) throws DataAccessException, IOException {
         LeaveGameMessage command = new Gson().fromJson(message, LeaveGameMessage.class);
+        AuthDAO authDAO = new SQLAuthDAO();
+        AuthData authData = authDAO.getAuth(command.getAuthString());
+        SQLGameDAO gameDAO = new SQLGameDAO();
+        GameData gameData = gameDAO.getGame(command.getGameID());
+
+        if (gameData.whiteUsername() != null && gameData.whiteUsername().equals(authData.username())) {
+            gameDAO.updateGame(gameData.gameID(), null, gameData.blackUsername(), gameData.game());
+        } else if (gameData.blackUsername() != null && gameData.blackUsername().equals(authData.username())) {
+            gameDAO.updateGame(gameData.gameID(), gameData.whiteUsername(), null, gameData.game());
+        }
+        ServerMessage notificationMessage = new NotificationMessage(authData.username() + " left the game");
+        connections.broadcastToOthers(command.getAuthString(), notificationMessage, command.getGameID());
         connections.removeConnection(command.getAuthString());
         connections.removePlayer(command.getAuthString(), command.getGameID());
-
     }
 
     private void resign(String message) {
