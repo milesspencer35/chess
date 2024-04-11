@@ -5,10 +5,7 @@ import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
-import webSocketMessages.userCommands.JoinPlayerMessage;
-import webSocketMessages.userCommands.LeaveGameMessage;
-import webSocketMessages.userCommands.ObserveGameMessage;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.userCommands.*;
 
 @WebSocket
 public class WebSocketHandler {
@@ -19,34 +16,40 @@ public class WebSocketHandler {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
 
         switch (command.getCommandType()) {
-            case JOIN_PLAYER -> join(message);
-            case JOIN_OBSERVER -> observe(message);
+            case JOIN_PLAYER -> join(message, session);
+            case JOIN_OBSERVER -> observe(message, session);
             case MAKE_MOVE -> move(message);
             case LEAVE -> leave(message);
             case RESIGN -> resign(message);
         }
     }
 
-    private void join(String message) {
+    private void join(String message, Session session) {
         JoinPlayerMessage command = new Gson().fromJson(message, JoinPlayerMessage.class);
-
+        connections.addConnection(command.getAuthString(), session);
+        connections.addPlayer(command.getAuthString(), command.getGameID());
     }
 
-    private void observe(String message) {
+    private void observe(String message, Session session) {
         ObserveGameMessage command = new Gson().fromJson(message, ObserveGameMessage.class);
-
+        connections.addConnection(command.getAuthString(), session);
+        connections.addPlayer(command.getAuthString(), command.getGameID());
     }
 
     private void move(String message) {
+        MakeMoveGameMessage command = new Gson().fromJson(message, MakeMoveGameMessage.class);
 
     }
 
     private void leave(String message) {
         LeaveGameMessage command = new Gson().fromJson(message, LeaveGameMessage.class);
+        connections.removeConnection(command.getAuthString());
+        connections.removePlayer(command.getAuthString(), command.getGameID());
 
     }
 
     private void resign(String message) {
+        ResignGameMessage command = new Gson().fromJson(message, ResignGameMessage.class);
 
     }
 
