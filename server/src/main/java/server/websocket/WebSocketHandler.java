@@ -2,10 +2,17 @@ package server.websocket;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import dataAccess.*;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import webSocketMessages.serverMessages.LoadGameMessage;
+import webSocketMessages.serverMessages.NotificationMessage;
+import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
+
+import java.io.IOException;
 
 @WebSocket
 public class WebSocketHandler {
@@ -24,10 +31,20 @@ public class WebSocketHandler {
         }
     }
 
-    private void join(String message, Session session) {
+    private void join(String message, Session session) throws DataAccessException, IOException {
         JoinPlayerMessage command = new Gson().fromJson(message, JoinPlayerMessage.class);
         connections.addConnection(command.getAuthString(), session);
         connections.addPlayer(command.getAuthString(), command.getGameID());
+
+        GameDAO gameDAO = new SQLGameDAO();
+        GameData gameData = gameDAO.getGame(command.getGameID());
+
+        ServerMessage loadGameMessage = new LoadGameMessage(gameData.game());
+        connections.broadcastToRoot(command.getAuthString(), loadGameMessage);
+
+        UserDAO userDAO = new SQLUserDAO();
+
+        ServerMessage notificationMessage = new NotificationMessage("User joined game");
     }
 
     private void observe(String message, Session session) {

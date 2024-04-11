@@ -29,7 +29,7 @@ public class WebsocketCommunicator extends Endpoint {
                 @Override
                 public void onMessage(String message) {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
-                    serverMessageObserver.notify(serverMessage);
+                    serverMessageObserver.notify(serverMessage, message);
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -41,7 +41,6 @@ public class WebsocketCommunicator extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    // TODO: implement something like this for each of the UserGameCommands
     public void joinGame(String authToken, Integer gameID, ChessGame.TeamColor playerColor) throws ResponseException {
         try {
             var msg = new JoinPlayerMessage(authToken, gameID, playerColor);
