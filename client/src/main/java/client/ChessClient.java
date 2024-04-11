@@ -1,12 +1,17 @@
 package client;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
+import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import ui.DrawChessBoard;
+import webSocketMessages.serverMessages.ErrorMessage;
+import webSocketMessages.serverMessages.LoadGameMessage;
+import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.serverMessages.ServerMessage;
 
 import java.util.*;
@@ -20,8 +25,9 @@ public class ChessClient implements ServerMessageObserver{
     private String authToken = null;
     private WebsocketCommunicator ws;
     private boolean inGame = false;
-    private ChessGame currentGame = null;
     private Integer currentGameID = null;
+    private ChessGame.TeamColor playerColor = null;
+
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl, this);
@@ -196,7 +202,8 @@ public class ChessClient implements ServerMessageObserver{
         server.joinGame(color, selectedGame.gameID(), authToken);
         ws = new WebsocketCommunicator(serverUrl, this);
         ws.joinGame(authToken, selectedGame.gameID(), color);
-        DrawChessBoard.drawBoard(selectedGame.game(), color);
+//        DrawChessBoard.drawBoard(selectedGame.game(), color);
+        playerColor = color;
         inGame = true;
         currentGameID = selectedGame.gameID();
     }
@@ -218,9 +225,11 @@ public class ChessClient implements ServerMessageObserver{
         server.joinGame(null, selectedGame.gameID(), authToken);
         ws = new WebsocketCommunicator(serverUrl, this);
         ws.observeGame(authToken, selectedGame.gameID());
-        DrawChessBoard.drawBoard(selectedGame.game(), ChessGame.TeamColor.WHITE);
+//        DrawChessBoard.drawBoard(selectedGame.game(), ChessGame.TeamColor.WHITE);
         inGame = true;
+        playerColor = ChessGame.TeamColor.WHITE;
         currentGameID = selectedGame.gameID();
+
     }
 
     private void logout() throws ResponseException {
@@ -321,16 +330,32 @@ public class ChessClient implements ServerMessageObserver{
         }
 
         inGame = false;
+        playerColor = null;
     }
 
 
     @Override
-    public void notify(ServerMessage message) {
-//        switch (message.getServerMessageType()) {
-//            case NOTIFICATION -> displayNotification(((NotificationMessage) message).getMessage());
-//            case ERROR -> displayError(((ErrorMessage) message).getErrorMessage());
-//            case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame());
-//        }
+    public void notify(ServerMessage message, String JsonMessage) {
+        switch (message.getServerMessageType()) {
+            case NOTIFICATION -> displayNotification(JsonMessage);
+            case ERROR -> displayError(JsonMessage);
+            case LOAD_GAME -> loadGame(JsonMessage);
+        }
     }
 
+    private void displayNotification(String message) {
+        NotificationMessage notificationMessage = new Gson().fromJson(message, NotificationMessage.class);
+        System.out.println(notificationMessage);
+    }
+
+    private void displayError(String message) {
+        ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
+        System.out.println();
+    }
+
+    private void loadGame(String message) {
+        LoadGameMessage loadGameMessage = new Gson().fromJson(message, LoadGameMessage.class);
+//        currentBoard = loadGameMessage.getGame().getBoard();
+        DrawChessBoard.drawBoard(loadGameMessage.getGame(), playerColor);
+    }
 }
