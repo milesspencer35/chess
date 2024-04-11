@@ -71,10 +71,29 @@ public class WebSocketHandler {
         connections.broadcastToOthers(command.getAuthString(), notificationMessage, command.getGameID());
     }
 
-    private void observe(String message, Session session) {
+    private void observe(String message, Session session) throws DataAccessException, IOException {
         ObserveGameMessage command = new Gson().fromJson(message, ObserveGameMessage.class);
+        GameDAO gameDAO = new SQLGameDAO();
+        GameData gameData = gameDAO.getGame(command.getGameID());
+        AuthDAO authDAO = new SQLAuthDAO();
+        AuthData authData = authDAO.getAuth(command.getAuthString());
         connections.addConnection(command.getAuthString(), session);
+
+        if (gameData == null) {
+            ServerMessage errorMessage = new ErrorMessage("Error: Game doesn't exist");
+            connections.broadcastToRoot(command.getAuthString(), errorMessage);
+            return;
+        } else if (authData == null) {
+            ServerMessage errorMessage = new ErrorMessage("Error: Bad authToken");
+            connections.broadcastToRoot(command.getAuthString(), errorMessage);
+            return;
+        }
+
         connections.addPlayer(command.getAuthString(), command.getGameID());
+        ServerMessage loadGameMessage = new LoadGameMessage(gameData.game());
+        connections.broadcastToRoot(command.getAuthString(), loadGameMessage);
+        ServerMessage notificationMessage = new NotificationMessage(authData.username() + " is observing the game");
+        connections.broadcastToOthers(command.getAuthString(), notificationMessage, command.getGameID());
     }
 
     private void move(String message) {
