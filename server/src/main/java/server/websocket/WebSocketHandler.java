@@ -3,16 +3,19 @@ package server.websocket;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.*;
+import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import webSocketMessages.serverMessages.ErrorMessage;
 import webSocketMessages.serverMessages.LoadGameMessage;
 import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @WebSocket
 public class WebSocketHandler {
@@ -33,18 +36,39 @@ public class WebSocketHandler {
 
     private void join(String message, Session session) throws DataAccessException, IOException {
         JoinPlayerMessage command = new Gson().fromJson(message, JoinPlayerMessage.class);
-        connections.addConnection(command.getAuthString(), session);
-        connections.addPlayer(command.getAuthString(), command.getGameID());
-
         GameDAO gameDAO = new SQLGameDAO();
         GameData gameData = gameDAO.getGame(command.getGameID());
+        AuthDAO authDAO = new SQLAuthDAO();
+        AuthData authData = authDAO.getAuth(command.getAuthString());
+        connections.addConnection(command.getAuthString(), session);
+
+        if (gameData == null) {
+            ServerMessage errorMessage = new ErrorMessage("Error: Game doesn't exist");
+            connections.broadcastToRoot(command.getAuthString(), errorMessage);
+            return;
+        } else if (authData == null) {
+            ServerMessage errorMessage = new ErrorMessage("Error: Bad authToken");
+            connections.broadcastToRoot(command.getAuthString(), errorMessage);
+            return;
+        } else if (command.getPlayerColor() == ChessGame.TeamColor.WHITE && !gameData.whiteUsername().equals(authData.username())
+                || command.getPlayerColor() == ChessGame.TeamColor.BLACK && !gameData.blackUsername().equals(authData.username())) {
+            ServerMessage errorMessage = new ErrorMessage("Error: Spot already taken");
+            connections.broadcastToRoot(command.getAuthString(), errorMessage);
+            return;
+        } else if (gameData.whiteUsername() == null && gameData.blackUsername() == null) {
+            ServerMessage errorMessage = new ErrorMessage("Error: Game doesn't exist");
+            connections.broadcastToRoot(command.getAuthString(), errorMessage);
+            return;
+        }
+
+        //connections.addConnection(command.getAuthString(), session);
+        connections.addPlayer(command.getAuthString(), command.getGameID());
 
         ServerMessage loadGameMessage = new LoadGameMessage(gameData.game());
         connections.broadcastToRoot(command.getAuthString(), loadGameMessage);
 
-        UserDAO userDAO = new SQLUserDAO();
-
-        ServerMessage notificationMessage = new NotificationMessage("User joined game");
+        ServerMessage notificationMessage = new NotificationMessage(authData.username() + " joined the game");
+        connections.broadcastToOthers(command.getAuthString(), notificationMessage, command.getGameID());
     }
 
     private void observe(String message, Session session) {

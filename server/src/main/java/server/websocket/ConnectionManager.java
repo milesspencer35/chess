@@ -30,12 +30,12 @@ public class ConnectionManager {
         games.remove(authToken);
     }
 
-    public void broadcastToOthers(String excludeAuthToken, ServerMessage serverMessage) throws IOException {
+    public void broadcastToOthers(String excludeAuthToken, ServerMessage serverMessage, Integer gameID) throws IOException {
         var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
-                if (!c.authToken.equals(excludeAuthToken)) {
-                    c.send(serverMessage.toString());
+                if (!c.authToken.equals(excludeAuthToken) && games.get(c.authToken).equals(gameID)) {
+                    c.send(new Gson().toJson(serverMessage));
                 }
             } else {
                 removeList.add(c);
@@ -49,7 +49,6 @@ public class ConnectionManager {
     }
 
     public void broadcastToRoot(String rootAuthToken, ServerMessage serverMessage) throws IOException {
-        //var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
                 if (c.authToken.equals(rootAuthToken)) {
@@ -57,10 +56,5 @@ public class ConnectionManager {
                 }
             }
         }
-
-        // Clean up any connections that were left open.
-//        for (var c : removeList) {
-//            connections.remove(c.authToken);
-//        }
     }
 }

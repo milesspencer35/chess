@@ -137,7 +137,6 @@ public class ChessClient implements ServerMessageObserver{
                 case "2" -> listGames();
                 case "3" -> {
                     joinGame(scanner);
-                    System.out.print(menuStart());
                 }
                 case "4" -> {
                     observe(scanner);
@@ -229,7 +228,6 @@ public class ChessClient implements ServerMessageObserver{
         inGame = true;
         playerColor = ChessGame.TeamColor.WHITE;
         currentGameID = selectedGame.gameID();
-
     }
 
     private void logout() throws ResponseException {
@@ -345,17 +343,21 @@ public class ChessClient implements ServerMessageObserver{
 
     private void displayNotification(String message) {
         NotificationMessage notificationMessage = new Gson().fromJson(message, NotificationMessage.class);
-        System.out.println(notificationMessage);
+        System.out.print("\n" + notificationMessage.getMessage());
+        printPrompt();
     }
 
     private void displayError(String message) {
         ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
-        System.out.println();
+        System.out.print("\n" + errorMessage.getErrorMessage());
+        printPrompt();
     }
 
     private void loadGame(String message) {
         LoadGameMessage loadGameMessage = new Gson().fromJson(message, LoadGameMessage.class);
-//        currentBoard = loadGameMessage.getGame().getBoard();
+        System.out.println();
         DrawChessBoard.drawBoard(loadGameMessage.getGame(), playerColor);
+        System.out.print(menuStart());
+        printPrompt();
     }
 }
