@@ -121,6 +121,12 @@ public class WebSocketHandler {
             return;
         }
 
+        if (gameData.game().getTeamTurn() == null) {
+            ServerMessage errorMessage = new ErrorMessage("Error: game already is over");
+            connections.broadcastToRoot(command.getAuthString(), errorMessage);
+            return;
+        }
+
         try {
             gameData.game().makeMove(command.getMove());
             if (gameData.game().isInCheck(gameData.game().getTeamTurn())
@@ -163,9 +169,29 @@ public class WebSocketHandler {
         connections.removePlayer(command.getAuthString(), command.getGameID());
     }
 
-    private void resign(String message) {
+    private void resign(String message) throws DataAccessException, IOException {
         ResignGameMessage command = new Gson().fromJson(message, ResignGameMessage.class);
+        SQLGameDAO gameDAO = new SQLGameDAO();
+        GameData gameData = gameDAO.getGame(command.getGameID());
+        AuthDAO authDAO = new SQLAuthDAO();
+        AuthData authData = authDAO.getAuth(command.getAuthString());
 
+        if (gameData.game().getTeamTurn() == null) {
+            ServerMessage errorMessage = new ErrorMessage("Error: Game is already over");
+            connections.broadcastToRoot(command.getAuthString(), errorMessage);
+            return;
+        }
+
+        if (gameData.blackUsername().equals(authData.username())  || gameData.whiteUsername().equals(authData.username())) {
+            gameData.game().setTeamTurn(null);
+            gameDAO.updateGame(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.game());
+
+            ServerMessage notificationMessage = new NotificationMessage(authData.username() + " resign from the game");
+            connections.broadcastToOthers(null, notificationMessage, command.getGameID());
+        } else {
+            ServerMessage errorMessage = new ErrorMessage("Error: Observers cannot resign");
+            connections.broadcastToRoot(command.getAuthString(), errorMessage);
+            return;
+        }
     }
-
 }
