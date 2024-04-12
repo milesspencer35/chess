@@ -68,9 +68,18 @@ public class WebsocketCommunicator extends Endpoint {
         }
     }
 
-    public void leaveOrResign(String authToken, Integer gameID) throws ResponseException {
+    public void leave(String authToken, Integer gameID) throws ResponseException {
         try {
             var msg = new LeaveGameMessage(authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(msg));
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    public void resign(String authToken, Integer gameID) throws ResponseException {
+        try {
+            var msg = new ResignGameMessage(authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(msg));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());

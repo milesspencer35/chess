@@ -111,7 +111,7 @@ public class ChessClient implements ServerMessageObserver{
                         Enter (3) for to view this help menu.
                         Enter (4) to quit the chess application.
                     """);
-        } else {
+        } else if (inGame == false) {
             System.out.print(
                     """
                       
@@ -123,6 +123,17 @@ public class ChessClient implements ServerMessageObserver{
                     Enter (6) to display this help menu.
                     Enter (7) to quit the chess application.
                     """);
+        } else {
+            System.out.print(
+                    """
+                        Enter (1) to make a move, make sure to use chess notation.
+                        Enter (2) to highlight legal moves.
+                        Enter (3) to redraw the board.
+                        Enter (4) to resign/forfeit the game.
+                        Enter (5) to leave game.
+                        Enter (6) to display this help menu.
+                    """
+            );
         }
     }
 
@@ -370,7 +381,7 @@ public class ChessClient implements ServerMessageObserver{
 
     private void resign() throws ResponseException {
         try {
-            ws.leaveOrResign(authToken, currentGameID);
+            ws.resign(authToken, currentGameID);
         } catch (ResponseException ex) {
             throw new ResponseException(500, "Error trying to resign from game");
         }
@@ -378,7 +389,7 @@ public class ChessClient implements ServerMessageObserver{
 
     private void leave() throws ResponseException {
         try {
-            ws.leaveOrResign(authToken, currentGameID);
+            ws.leave(authToken, currentGameID);
         } catch (ResponseException ex) {
             throw new ResponseException(500, "Error trying to leave game");
         }
