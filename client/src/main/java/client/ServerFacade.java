@@ -8,6 +8,7 @@ import request.CreateGameRequest;
 import request.JoinRequest;
 import response.CreateGameResponse;
 import response.ListGamesResponse;
+import webSocketMessages.serverMessages.ServerMessage;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +19,7 @@ import java.net.URL;
 import java.net.URI;
 import java.util.ArrayList;
 
-public class ServerFacade {
+public class ServerFacade implements ServerMessageObserver {
 
     private final String serverUrl;
     private final ServerMessageObserver serverMessageObserver;
@@ -136,5 +137,10 @@ public class ServerFacade {
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
+    }
+
+    @Override
+    public void notify(ServerMessage message, String JsonMessage) {
+        
     }
 }
