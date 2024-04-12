@@ -103,10 +103,34 @@ public class WebSocketHandler {
         GameData gameData = gameDAO.getGame(command.getGameID());
         AuthDAO authDAO = new SQLAuthDAO();
         AuthData authData = authDAO.getAuth(command.getAuthString());
+
+        ChessGame.TeamColor playerColor = null;
+        if (gameData.whiteUsername() != null && gameData.whiteUsername().equals(authData.username())) {
+            playerColor = ChessGame.TeamColor.WHITE;
+        } else if (gameData.blackUsername() != null && gameData.blackUsername().equals(authData.username())) {
+            playerColor = ChessGame.TeamColor.BLACK;
+        } else {
+            ServerMessage errorMessage = new ErrorMessage("Error: Observers cannot make moves");
+            connections.broadcastToRoot(command.getAuthString(), errorMessage);
+            return;
+        }
+
+        if (gameData.game().getBoard().getPiece(command.getMove().getStartPosition()).getTeamColor() != playerColor) {
+            ServerMessage errorMessage = new ErrorMessage("Error: that isn't your teams piece");
+            connections.broadcastToRoot(command.getAuthString(), errorMessage);
+            return;
+        }
+
         try {
             gameData.game().makeMove(command.getMove());
+            if (gameData.game().isInCheck(gameData.game().getTeamTurn())
+                    || gameData.game().isInStalemate(gameData.game().getTeamTurn())) {
+                gameData.game().setTeamTurn(null);
+            }
         } catch (InvalidMoveException ex) {
-            System.out.print(ex);
+            ServerMessage errorMessage = new ErrorMessage("Error: Invalid Move");
+            connections.broadcastToRoot(command.getAuthString(), errorMessage);
+            return;
         }
 
         gameDAO.updateGame(gameData.gameID(),
