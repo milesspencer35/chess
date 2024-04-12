@@ -59,9 +59,9 @@ public class WebsocketCommunicator extends Endpoint {
         }
     }
 
-    public void makeMove(String authToken, Integer gameID, ChessMove move) throws ResponseException {
+    public void makeMove(String authToken, Integer gameID, ChessMove move, String startPos, String endPos) throws ResponseException {
         try {
-            var msg = new MakeMoveGameMessage(authToken, gameID, move);
+            var msg = new MakeMoveGameMessage(authToken, gameID, move, startPos, endPos);
             this.session.getBasicRemote().sendText(new Gson().toJson(msg));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());

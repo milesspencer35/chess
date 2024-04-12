@@ -1,6 +1,7 @@
 package server.websocket;
 
 import chess.ChessGame;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataAccess.*;
 import model.AuthData;
@@ -96,9 +97,28 @@ public class WebSocketHandler {
         connections.broadcastToOthers(command.getAuthString(), notificationMessage, command.getGameID());
     }
 
-    private void move(String message) {
+    private void move(String message) throws DataAccessException, IOException {
         MakeMoveGameMessage command = new Gson().fromJson(message, MakeMoveGameMessage.class);
+        SQLGameDAO gameDAO = new SQLGameDAO();
+        GameData gameData = gameDAO.getGame(command.getGameID());
+        AuthDAO authDAO = new SQLAuthDAO();
+        AuthData authData = authDAO.getAuth(command.getAuthString());
+        try {
+            gameData.game().makeMove(command.getMove());
+        } catch (InvalidMoveException ex) {
+            System.out.print(ex);
+        }
 
+        gameDAO.updateGame(gameData.gameID(),
+                gameData.whiteUsername() == null ? null : gameData.whiteUsername(),
+                gameData.blackUsername() == null ? null : gameData.blackUsername(),
+                gameData.game());
+
+        LoadGameMessage loadGameMessage = new LoadGameMessage(gameData.game());
+        connections.broadcastToOthers(null, loadGameMessage, gameData.gameID());
+        NotificationMessage notificationMessage = new NotificationMessage
+                (authData.username() + " moved piece at " + command.getStartPos() + " to " + command.getEndPos());
+        connections.broadcastToOthers(command.getAuthString(), notificationMessage, command.getGameID());
     }
 
     private void leave(String message) throws DataAccessException, IOException {

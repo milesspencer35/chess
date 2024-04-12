@@ -14,6 +14,7 @@ import webSocketMessages.serverMessages.LoadGameMessage;
 import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.serverMessages.ServerMessage;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 import static ui.EscapeSequences.*;
@@ -293,15 +294,64 @@ public class ChessClient implements ServerMessageObserver{
     }
 
     private void makeMove(Scanner scanner) throws ResponseException {
-        ChessPosition startPosition = new ChessPosition(1, 1);
-        ChessPosition endPosition = new ChessPosition(1, 2);
+        System.out.println("Enter position of piece you want to move ex. f5");
+        String startPositionString = scanner.nextLine();
+
+        System.out.println("Enter position of where you want to move the piece ex. f5");
+        String endPositionString = scanner.nextLine();
+
+        int[] startPositionCoordinates = determinePosition(startPositionString);
+        int[] endPositionCoordinates = determinePosition(endPositionString);
+        if (startPositionCoordinates[0] == -1 || startPositionCoordinates[1] == -1
+                || endPositionCoordinates[0] == -1 || endPositionCoordinates[1] == -1) {
+            throw new ResponseException(500, "one of your positions were invalid");
+        }
+
+        ChessPosition startPosition = new ChessPosition(startPositionCoordinates[0], startPositionCoordinates[1]);
+        ChessPosition endPosition = new ChessPosition(endPositionCoordinates[0], endPositionCoordinates[1]);
         ChessMove move = new ChessMove(startPosition, endPosition, null);
 
         try {
-            ws.makeMove(authToken, currentGameID, move);
+            ws.makeMove(authToken, currentGameID, move, startPositionString, endPositionString);
         } catch (ResponseException ex) {
-            throw new ResponseException(500, "Error trying to resign from game");
+            throw new ResponseException(500, "Error trying to make a move");
         }
+    }
+
+    private int[] determinePosition(String positionString) {
+        int[] position = new int[2];
+        if (positionString.length() != 2) {
+            position[0] = -1;
+            position[1] = -1;
+            return position;
+        }
+        //Number is the row
+        char secondChar = positionString.charAt(1);
+        switch (secondChar) {
+            case '1': position[0] = 1; break;
+            case '2': position[0] = 2; break;
+            case '3': position[0] = 3; break;
+            case '4': position[0] = 4; break;
+            case '5': position[0] = 5; break;
+            case '6': position[0] = 6; break;
+            case '7': position[0] = 7; break;
+            case '8': position[0] = 8; break;
+            default: position[0] = -1; break;
+        }
+        // letter is the column
+        char firstChar = positionString.toLowerCase().charAt(0);
+        switch (firstChar) {
+            case 'a': position[1] = 1; break;
+            case 'b': position[1] = 2; break;
+            case 'c': position[1] = 3; break;
+            case 'd': position[1] = 4; break;
+            case 'e': position[1] = 5; break;
+            case 'f': position[1] = 6; break;
+            case 'g': position[1] = 7; break;
+            case 'h': position[1] = 8; break;
+            default: position[1] = -1; break;
+        }
+        return position;
     }
 
     private void highlightLegalMoves(Scanner scanner) {
