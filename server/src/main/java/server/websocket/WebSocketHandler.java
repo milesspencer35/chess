@@ -121,7 +121,7 @@ public class WebSocketHandler {
             return;
         }
 
-        if (gameData.game().getTeamTurn() == null) {
+        if (gameData.game().getTeamTurn() == ChessGame.TeamColor.NONE) {
             ServerMessage errorMessage = new ErrorMessage("Error: game already is over");
             connections.broadcastToRoot(command.getAuthString(), errorMessage);
             return;
@@ -129,14 +129,22 @@ public class WebSocketHandler {
 
         try {
             gameData.game().makeMove(command.getMove());
-            if (gameData.game().isInCheck(gameData.game().getTeamTurn())
-                    || gameData.game().isInStalemate(gameData.game().getTeamTurn())) {
-                gameData.game().setTeamTurn(null);
-            }
         } catch (InvalidMoveException ex) {
             ServerMessage errorMessage = new ErrorMessage("Error: Invalid Move");
             connections.broadcastToRoot(command.getAuthString(), errorMessage);
             return;
+        }
+
+        if (gameData.game().isInCheckmate(gameData.game().getTeamTurn())) {
+            String playerInCheck = gameData.game().getTeamTurn() == ChessGame.TeamColor.WHITE
+                    ? gameData.whiteUsername() : gameData.blackUsername();
+            gameData.game().setTeamTurn(ChessGame.TeamColor.NONE);
+            ServerMessage notificationMessage = new NotificationMessage(playerInCheck + " is in Checkmate");
+            connections.broadcastToOthers(null, notificationMessage, command.getGameID());
+        } else if (gameData.game().isInStalemate(gameData.game().getTeamTurn())) {
+            gameData.game().setTeamTurn(ChessGame.TeamColor.NONE);
+            ServerMessage notificationMessage = new NotificationMessage("stalemate!");
+            connections.broadcastToOthers(null, notificationMessage, command.getGameID());
         }
 
         gameDAO.updateGame(gameData.gameID(),
@@ -149,6 +157,13 @@ public class WebSocketHandler {
         NotificationMessage notificationMessage = new NotificationMessage
                 (authData.username() + " moved piece at " + command.getStartPos() + " to " + command.getEndPos());
         connections.broadcastToOthers(command.getAuthString(), notificationMessage, command.getGameID());
+
+        if (gameData.game().isInCheck(gameData.game().getTeamTurn())) {
+            String playerInCheck = gameData.game().getTeamTurn() == ChessGame.TeamColor.WHITE
+                    ? gameData.whiteUsername() : gameData.blackUsername();
+            notificationMessage = new NotificationMessage(playerInCheck + " is in check");
+            connections.broadcastToOthers(null, notificationMessage, command.getGameID());
+        }
     }
 
     private void leave(String message) throws DataAccessException, IOException {
@@ -176,17 +191,17 @@ public class WebSocketHandler {
         AuthDAO authDAO = new SQLAuthDAO();
         AuthData authData = authDAO.getAuth(command.getAuthString());
 
-        if (gameData.game().getTeamTurn() == null) {
+        if (gameData.game().getTeamTurn() == ChessGame.TeamColor.NONE) {
             ServerMessage errorMessage = new ErrorMessage("Error: Game is already over");
             connections.broadcastToRoot(command.getAuthString(), errorMessage);
             return;
         }
 
         if (gameData.blackUsername().equals(authData.username())  || gameData.whiteUsername().equals(authData.username())) {
-            gameData.game().setTeamTurn(null);
+            gameData.game().setTeamTurn(ChessGame.TeamColor.NONE);
             gameDAO.updateGame(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.game());
 
-            ServerMessage notificationMessage = new NotificationMessage(authData.username() + " resign from the game");
+            ServerMessage notificationMessage = new NotificationMessage(authData.username() + " resigned from the game");
             connections.broadcastToOthers(null, notificationMessage, command.getGameID());
         } else {
             ServerMessage errorMessage = new ErrorMessage("Error: Observers cannot resign");
