@@ -28,6 +28,7 @@ public class ChessClient implements ServerMessageObserver{
     private boolean inGame = false;
     private Integer currentGameID = null;
     private ChessGame.TeamColor playerColor = null;
+    private ChessGame currentGameState = null;
 
 
     public ChessClient(String serverUrl) {
@@ -280,8 +281,8 @@ public class ChessClient implements ServerMessageObserver{
             switch (cmd) {
                 case "1" -> makeMove(scanner);
                 case "2" -> highlightLegalMoves(scanner);
-                case "3" -> redrawBoard(scanner);
-                case "4" -> resign(scanner);
+                case "3" -> redrawBoard();
+                case "4" -> resign();
                 case "5" -> {
                     leave();
                     System.out.print(menuStart());
@@ -356,14 +357,18 @@ public class ChessClient implements ServerMessageObserver{
     }
 
     private void highlightLegalMoves(Scanner scanner) {
-
+        System.out.println("Enter position of piece you want to see moves for");
+        String positionString = scanner.nextLine();
+        int[] positionCoordinates = determinePosition(positionString);
+        ChessPosition position = new ChessPosition(positionCoordinates[0], positionCoordinates[1]);
+        DrawChessBoard.highlightValidMoves(currentGameState, playerColor, position);
     }
 
-    private void redrawBoard(Scanner scanner) {
-
+    private void redrawBoard() {
+        DrawChessBoard.drawBoard(currentGameState, playerColor);
     }
 
-    private void resign(Scanner scanner) throws ResponseException {
+    private void resign() throws ResponseException {
         try {
             ws.leaveOrResign(authToken, currentGameID);
         } catch (ResponseException ex) {
@@ -410,5 +415,7 @@ public class ChessClient implements ServerMessageObserver{
         DrawChessBoard.drawBoard(loadGameMessage.getGame(), playerColor);
         System.out.print(menuStart());
         printPrompt();
+
+        this.currentGameState = loadGameMessage.getGame();
     }
 }

@@ -1,9 +1,6 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -15,6 +12,7 @@ public class DrawChessBoard {
 
     private static final int BOARD_WIDTH = 8;
     private static final int BOARD_HEIGHT = 8;
+    private static ArrayList<ArrayList<Integer>> validMoves = new ArrayList<>();
 
     public static void main(String[] args) {
         ChessBoard board = new ChessBoard();
@@ -29,6 +27,32 @@ public class DrawChessBoard {
         game.setTeamTurn(ChessGame.TeamColor.BLACK);
         System.out.println("Black Board");
         drawBoard(game, ChessGame.TeamColor.BLACK);
+    }
+
+    public static void highlightValidMoves(ChessGame game, ChessGame.TeamColor playerColor, ChessPosition chessPosition) {
+       ArrayList<ChessMove> moves = (ArrayList<ChessMove>) game.validMoves(chessPosition);
+       for (ChessMove move : moves) {
+           ArrayList<Integer> coordinates = new ArrayList<>();
+           coordinates.add(move.getEndPosition().getRow());
+           if (playerColor == ChessGame.TeamColor.WHITE) {
+               coordinates.add(move.getEndPosition().getColumn());
+           } else {
+               switch (move.getEndPosition().getColumn()) {
+                   case 1: coordinates.add(8); break;
+                   case 2: coordinates.add(7); break;
+                   case 3: coordinates.add(6); break;
+                   case 4: coordinates.add(5); break;
+                   case 5: coordinates.add(4); break;
+                   case 6: coordinates.add(3); break;
+                   case 7: coordinates.add(2); break;
+                   case 8: coordinates.add(1); break;
+               }
+           }
+
+           validMoves.add(coordinates);
+       }
+       drawBoard(game, playerColor);
+       validMoves.clear();
     }
 
     public static void drawBoard(ChessGame game, ChessGame.TeamColor playerColor) {
@@ -122,6 +146,13 @@ public class DrawChessBoard {
 
         for (int col = 1; col <= 8; col++) {
             ChessPiece piece = getPiece(board, col, row);
+            ArrayList<Integer> coordinates = new ArrayList<>();
+            coordinates.add(row);
+            coordinates.add(col);
+            if (validMoves.contains(coordinates)) {
+                drawHighlightSquare(out, getPieceString(piece), getPieceColor(piece));
+                continue;
+            }
 
             if (row % 2 == 1) {
                 if (col % 2 == 1) {
@@ -189,6 +220,14 @@ public class DrawChessBoard {
         out.print(" ");
     }
 
+    private static void drawHighlightSquare(PrintStream out, String piece, ChessGame.TeamColor color) {
+        setPieceColor(out, color);
+        setBackgroundMagenta(out);
+        out.print(" ");
+        out.print(piece);
+        out.print(" ");
+    }
+
     private static void setPieceColor(PrintStream out, ChessGame.TeamColor color) {
         if (color == ChessGame.TeamColor.WHITE) {
             setTextColorBlue(out);
@@ -201,7 +240,6 @@ public class DrawChessBoard {
         ChessPosition pos = new ChessPosition(row, col);
         return board.getPiece(pos);
     }
-
 
     private static void drawEMPTY(PrintStream out) {
         out.print(EMPTY);
@@ -219,6 +257,8 @@ public class DrawChessBoard {
     private static void setBackgroundBlack(PrintStream out) {
         out.print(SET_BG_COLOR_BLACK);
     }
+
+    private static void setBackgroundMagenta(PrintStream out) {out.print(SET_BG_COLOR_MAGENTA);}
 
     private static void setTextColorBlue(PrintStream out) {
         out.print(SET_TEXT_COLOR_BLUE);
