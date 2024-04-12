@@ -384,11 +384,11 @@ public class ChessClient implements ServerMessageObserver{
 
 
     @Override
-    public void notify(ServerMessage message, String JsonMessage) {
+    public void notify(ServerMessage message, String jsonMessage) {
         switch (message.getServerMessageType()) {
-            case NOTIFICATION -> displayNotification(JsonMessage);
-            case ERROR -> displayError(JsonMessage);
-            case LOAD_GAME -> loadGame(JsonMessage);
+            case NOTIFICATION -> displayNotification(jsonMessage);
+            case ERROR -> displayError(jsonMessage);
+            case LOAD_GAME -> loadGame(jsonMessage);
         }
     }
 

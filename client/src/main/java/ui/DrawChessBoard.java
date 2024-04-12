@@ -173,12 +173,6 @@ public class DrawChessBoard {
         }
     }
 
-    private static void drawSquare(PrintStream out, String piece, ChessGame.TeamColor color) {
-        if (color == ChessGame.TeamColor.WHITE) {
-            drawWhiteSquare(out, piece, color);
-        }
-    }
-
     private static void drawWhiteSquare(PrintStream out, String piece, ChessGame.TeamColor color) {
         setPieceColor(out, color);
         setBackgroundWhite(out);

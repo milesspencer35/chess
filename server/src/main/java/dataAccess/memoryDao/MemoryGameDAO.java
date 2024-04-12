@@ -14,12 +14,6 @@ public class MemoryGameDAO implements GameDAO {
     private static MemoryGameDAO instance;
     // private constructor to avoid client applications using the constructor
     private MemoryGameDAO(){}
-    public static MemoryGameDAO getInstance() {
-        if (instance == null) {
-            instance = new MemoryGameDAO();
-        }
-        return instance;
-    }
 
     private Map<Integer,GameData> games = new HashMap<>();
     private int nextGameID = 0;
