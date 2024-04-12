@@ -31,7 +31,8 @@ public class ChessClient implements ServerMessageObserver{
 
 
     public ChessClient(String serverUrl) {
-        server = new ServerFacade(serverUrl, this);
+        //server = new ServerFacade(serverUrl, this);
+        server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
     }
 

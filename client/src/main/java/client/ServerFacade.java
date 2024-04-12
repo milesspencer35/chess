@@ -19,14 +19,14 @@ import java.net.URL;
 import java.net.URI;
 import java.util.ArrayList;
 
-public class ServerFacade implements ServerMessageObserver {
+public class ServerFacade {
 
     private final String serverUrl;
-    private final ServerMessageObserver serverMessageObserver;
+    //private final ServerMessageObserver serverMessageObserver;
 
-    public ServerFacade(String url, ServerMessageObserver serverMessageObserver) {
+    public ServerFacade(String url) {
         serverUrl = url;
-        this.serverMessageObserver = serverMessageObserver;
+        //this.serverMessageObserver = serverMessageObserver;
     }
 
     public void clearApp() throws ResponseException {
@@ -137,10 +137,5 @@ public class ServerFacade implements ServerMessageObserver {
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
-    }
-
-    @Override
-    public void notify(ServerMessage message, String JsonMessage) {
-        
     }
 }
