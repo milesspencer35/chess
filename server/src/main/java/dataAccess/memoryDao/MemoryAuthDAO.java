@@ -10,12 +10,6 @@ public class MemoryAuthDAO implements AuthDAO {
     private static MemoryAuthDAO instance;
     // private constructor to avoid client applications using the constructor
     private MemoryAuthDAO(){}
-    public static MemoryAuthDAO getInstance() {
-        if (instance == null) {
-            instance = new MemoryAuthDAO();
-        }
-        return instance;
-    }
 
     private Map<String,AuthData> auths = new HashMap<>();
 

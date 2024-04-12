@@ -365,7 +365,7 @@ public class ChessClient implements ServerMessageObserver{
 
     private void resign(Scanner scanner) throws ResponseException {
         try {
-            ws.resign(authToken, currentGameID);
+            ws.leaveOrResign(authToken, currentGameID);
         } catch (ResponseException ex) {
             throw new ResponseException(500, "Error trying to resign from game");
         }
@@ -373,7 +373,7 @@ public class ChessClient implements ServerMessageObserver{
 
     private void leave() throws ResponseException {
         try {
-            ws.leave(authToken, currentGameID);
+            ws.leaveOrResign(authToken, currentGameID);
         } catch (ResponseException ex) {
             throw new ResponseException(500, "Error trying to leave game");
         }

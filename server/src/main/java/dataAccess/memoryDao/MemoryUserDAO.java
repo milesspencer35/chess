@@ -12,12 +12,6 @@ public class MemoryUserDAO implements UserDAO {
     private static MemoryUserDAO instance;
     // private constructor to avoid client applications using the constructor
     private MemoryUserDAO(){}
-    public static MemoryUserDAO getInstance() {
-        if (instance == null) {
-            instance = new MemoryUserDAO();
-        }
-        return instance;
-    }
 
     private Map<String,UserData> users = new HashMap<>();
 
